@@ -1,105 +1,267 @@
-import React from "react";
-import "../login/login.scss";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { createAccount } from "../../api/loginapi";
+import { toast } from "react-toastify";
 
 const SignUp = () => {
-  return (
-    <section class="py-3 py-md-5 py-xl-8">
-      <div class="container">
-        <div class="row">
-          <div class="col-12">
-            <div class="mb-5">
-              <h2 class="display-5 fw-bold text-center">Sign Up</h2>
-              <p class="text-center m-0">
-                Already have an account? <Link to="/login">Sign In</Link>
-              </p>
-            </div>
-          </div>
-        </div>
-        <div class="row justify-content-center">
-          <div class="col-12 col-lg-10 col-xl-8">
-            <div class="row gy-5 justify-content-center">
-              <div class="col-12 col-lg-5">
-                <form action="#!">
-                  <div class="row gy-3 overflow-hidden">
-                    <div class="col-12">
-                      <div class="form-floating mb-3">
-                        <input
-                          type="text"
-                          class="form-control border-0 border-bottom rounded-0"
-                          name="name"
-                          id="name"
-                          placeholder="Name"
-                          required
-                        />
-                        <label for="name" class="form-label">
-                          Name
-                        </label>
-                      </div>
-                    </div>
-                    <div class="col-12">
-                      <div class="form-floating mb-3">
-                        <input
-                          type="email"
-                          class="form-control border-0 border-bottom rounded-0"
-                          name="email"
-                          id="email"
-                          placeholder="name@example.com"
-                          required
-                        />
-                        <label for="email" class="form-label">
-                          Email
-                        </label>
-                      </div>
-                    </div>
-                    <div class="col-12">
-                      <div class="form-floating mb-3">
-                        <input
-                          type="password"
-                          class="form-control border-0 border-bottom rounded-0"
-                          name="password"
-                          id="password"
-                          value=""
-                          placeholder="Password"
-                          required
-                        />
-                        <label for="password" class="form-label">
-                          Password
-                        </label>
-                      </div>
-                    </div>
-                    <div class="col-12">
-                      <div class="form-floating mb-3">
-                        <input
-                          type="password"
-                          class="form-control border-0 border-bottom rounded-0"
-                          name="password"
-                          id="confirmPassword"
-                          value=""
-                          placeholder="Confirm Password"
-                          required
-                        />
-                        <label for="confirmPassword" class="form-label">
-                          Confirm Password
-                        </label>
-                      </div>
-                    </div>
+  const [formData, setFormData] = useState({
+    userName: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+  const [errors, setErrors] = useState({});
+  const navigate = useNavigate();
 
-                    <div class="col-12">
-                      <div class="d-grid">
-                        <button class="btn btn-primary btn-lg" type="submit">
-                          Sign Up
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </form>
-              </div>
+  const validateForm = () => {
+    let formErrors = {};
+    let valid = true;
+
+    if (!formData.email) {
+      formErrors.email = "Email is required";
+      valid = false;
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      formErrors.email = "Email address is invalid";
+      valid = false;
+    }
+
+    if (!formData.password) {
+      formErrors.password = "Password is required";
+      valid = false;
+    } else if (formData.password.length < 6) {
+      formErrors.password = "Password must be at least 6 characters";
+      valid = false;
+    } else if (!formData.confirmPassword === formData.password) {
+      formErrors.confirmPassword = "Confirm Password is required";
+      valid = false;
+    } else if (formData.confirmPassword !== formData.password) {
+      formErrors.confirmPassword =
+        "Confirm Password and Password should be equal ";
+      valid = false;
+    }
+
+    // if (!formData.phone) {
+    //   formErrors.phone = "Phone number is required";
+    //   valid = false;
+    // } else if (!/^\d{10}$/.test(formData.phone)) {
+    //   formErrors.phone = "Phone number is invalid";
+    //   valid = false;
+    // }
+
+    // if (!formData.address) {
+    //   formErrors.address = "Address is required";
+    //   valid = false;
+    // }
+
+    setErrors(formErrors);
+    return valid;
+  };
+
+  const fetchItems = async () => {
+    try {
+      const data = await createAccount(formData);
+      console.log("user->", data);
+      setFormData({
+        userName: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+      });
+      setErrors({});
+      toast.success("Account created succesfully");
+      navigate("/login");
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (validateForm()) {
+      fetchItems();
+    }
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
+
+  return (
+    <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
+      <div className="sm:mx-auto sm:w-full sm:max-w-md">
+        <h2 className="mt-10 text-center text-3xl font-extrabold leading-9 tracking-tight text-gray-900">
+          Sign Up
+        </h2>
+      </div>
+
+      <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-md">
+        <form className="space-y-6" onSubmit={handleSubmit}>
+          <div>
+            <label
+              htmlFor="userName"
+              className="block text-sm font-medium leading-6 text-gray-900"
+            >
+              Name
+            </label>
+            <div className="mt-2">
+              <input
+                id="userName"
+                name="userName"
+                type="text"
+                value={formData?.userName || ""}
+                onChange={handleChange}
+                required
+                className="block w-full rounded-md border-gray-300 shadow-sm py-2 px-3 text-gray-900 placeholder-gray-400 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              />
+              {errors.userName && (
+                <p className="mt-2 text-sm text-red-600">{errors?.userName}</p>
+              )}
             </div>
           </div>
-        </div>
+          <div>
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium leading-6 text-gray-900"
+            >
+              Email address
+            </label>
+            <div className="mt-2">
+              <input
+                id="email"
+                name="email"
+                type="email"
+                autoComplete="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+                className="block w-full rounded-md border-gray-300 shadow-sm py-2 px-3 text-gray-900 placeholder-gray-400 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              />
+              {errors.email && (
+                <p className="mt-2 text-sm text-red-600">{errors.email}</p>
+              )}
+            </div>
+          </div>
+
+          <div>
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium leading-6 text-gray-900"
+            >
+              Password
+            </label>
+            <div className="mt-2">
+              <input
+                id="password"
+                name="password"
+                type="password"
+                autoComplete="current-password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+                className="block w-full rounded-md border-gray-300 shadow-sm py-2 px-3 text-gray-900 placeholder-gray-400 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              />
+              {errors.password && (
+                <p className="mt-2 text-sm text-red-600">{errors.password}</p>
+              )}
+            </div>
+          </div>
+          <div>
+            <label
+              htmlFor="confirmPassword"
+              className="block text-sm font-medium leading-6 text-gray-900"
+            >
+              Confirm Password
+            </label>
+            <div className="mt-2">
+              <input
+                id="confirmPassword"
+                name="confirmPassword"
+                type="password"
+                value={formData?.confirmPassword || ""}
+                onChange={handleChange}
+                required
+                className="block w-full rounded-md border-gray-300 shadow-sm py-2 px-3 text-gray-900 placeholder-gray-400 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              />
+              {errors?.confirmPassword && (
+                <p className="mt-2 text-sm text-red-600">
+                  {errors.confirmPassword}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* <div>
+            <label
+              htmlFor="phone"
+              className="block text-sm font-medium leading-6 text-gray-900"
+            >
+              Phone Number
+            </label>
+            <div className="mt-2">
+              <input
+                id="phone"
+                name="phone"
+                type="tel"
+                autoComplete="tel"
+                value={formData.phone}
+                onChange={handleChange}
+                required
+                className="block w-full rounded-md border-gray-300 shadow-sm py-2 px-3 text-gray-900 placeholder-gray-400 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              />
+              {errors.phone && (
+                <p className="mt-2 text-sm text-red-600">{errors.phone}</p>
+              )}
+            </div>
+          </div>
+
+          <div>
+            <label
+              htmlFor="address"
+              className="block text-sm font-medium leading-6 text-gray-900"
+            >
+              Address
+            </label>
+            <div className="mt-2">
+              <textarea
+                id="address"
+                name="address"
+                autoComplete="address"
+                value={formData.address}
+                onChange={handleChange}
+                required
+                className="block w-full rounded-md border-gray-300 shadow-sm py-2 px-3 text-gray-900 placeholder-gray-400 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              />
+              {errors.address && (
+                <p className="mt-2 text-sm text-red-600">{errors.address}</p>
+              )}
+            </div>
+          </div> */}
+
+          <div>
+            <button
+              type="submit"
+              className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            >
+              Sign Up
+            </button>
+          </div>
+        </form>
+
+        <p className="mt-10 text-center text-sm text-gray-500">
+          Already have an account?{" "}
+          <Link
+            to="/login"
+            className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
+          >
+            Sign In
+          </Link>
+        </p>
       </div>
-    </section>
+    </div>
   );
 };
 
