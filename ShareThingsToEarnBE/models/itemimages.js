@@ -11,12 +11,15 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      ItemImages.belongsTo(models.Item, {
+        foreignKey: 'itemId'
+      })
     }
   }
   ItemImages.init({
     itemId: DataTypes.INTEGER,
-    imageUrl: DataTypes.BLOB,
-    mimeType: DataTypes.STRING
+    imageUrl: DataTypes.STRING,
+    fileName: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'ItemImages',

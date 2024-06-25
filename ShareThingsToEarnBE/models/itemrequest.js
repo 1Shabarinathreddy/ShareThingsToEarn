@@ -11,13 +11,21 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      ItemRequest.belongsTo(models.User, {
+        foreignKey: 'requestedUserId'
+      })
+      ItemRequest.belongsTo(models.Item, {
+        foreignKey: 'itemId'
+      })
     }
   }
   ItemRequest.init({
     itemId: DataTypes.INTEGER,
     rentalStartDate: DataTypes.DATE,
     rentalEndDate: DataTypes.DATE,
-    notes: DataTypes.STRING
+    notes: DataTypes.STRING,
+    requestedUserId: DataTypes.INTEGER,
+    status: DataTypes.ENUM('pending', 'reject', 'approved', 'returned')
   }, {
     sequelize,
     modelName: 'ItemRequest',
