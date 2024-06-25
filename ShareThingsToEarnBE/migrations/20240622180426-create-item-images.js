@@ -18,9 +18,10 @@ module.exports = {
         }
       },
       imageUrl: {
-        type: Sequelize.BLOB('long')
+        type: Sequelize.STRING,
+        allowNull: false
       },
-      mimeType: {
+      fileName: {
         type: Sequelize.STRING
       },
       createdAt: {

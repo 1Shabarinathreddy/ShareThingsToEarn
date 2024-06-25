@@ -17,6 +17,8 @@ module.exports = (sequelize, DataTypes) => {
       Item.belongsTo(models.User, {
         foreignKey: 'userId'
       })
+      Item.hasMany(models.ItemRequest, { foreignKey: 'itemId' });
+      Item.hasOne(models.ItemImages, { foreignKey: 'itemId' });
     }
   }
   Item.init({
@@ -29,7 +31,8 @@ module.exports = (sequelize, DataTypes) => {
     availabilityStartDate: DataTypes.DATE,
     availabilityEndDate: DataTypes.DATE,
     location: DataTypes.STRING,
-    notes: DataTypes.STRING
+    notes: DataTypes.STRING,
+    isRequested: DataTypes.BOOLEAN
   }, {
     sequelize,
     modelName: 'Item',

@@ -4,34 +4,35 @@ const { listCategories, createItem, listItems, updateItem, destroyItem, listItem
 const addItemSchema = Joi.object({
     title: Joi.string().label('Title').required(),
     categoryId: Joi.number().label('Category Id').required(),
-    description: Joi.string(),
+    description: Joi.string().allow(null),
     rentalPrice: Joi.number().required(),
     rentalPeriod: Joi.string().required(),
     availabilityStartDate: Joi.date().required(),
     availabilityEndDate: Joi.date().required(),
-    location: Joi.string(),
-    notes: Joi.string() 
+    location: Joi.string().allow(null).required(),
+    notes: Joi.string().allow(null) 
 });
 
 const editItemSchema = Joi.object({
     title: Joi.string().label('Title'),
-    description: Joi.string(),
-    rentalPrice: Joi.number(),
-    rentalPeriod: Joi.string(),
+    description: Joi.string().allow(null),
+    rentalPrice: Joi.number().allow(null),
+    rentalPeriod: Joi.string().allow(null),
     availabilityStartDate: Joi.date(),
     availabilityEndDate: Joi.date(),
     location: Joi.string(),
-    notes: Joi.string()
+    notes: Joi.string().allow(null)
 });
 
 async function addItem (req, res) {
     try {
+        console.log(req.body);
         const data = req.body;
         const { error, value } = addItemSchema.validate(data);
         if (error) {
             throw new Error(error.details[0].message);
         }
-        const result = await createItem(data, req.userId);
+        const result = await createItem(data, req.file, req.userId);
         res.send(result);
     } catch(error) {
         res.status(400);
@@ -72,7 +73,7 @@ async function editItem (req, res) {
         if (error) {
             throw new Error(error.details[0].message);
         }
-        const result = await updateItem(req.params.id, data, req.userId);
+        const result = await updateItem(req.params.id, data, req.file, req.userId);
         res.send(result);
     } catch(error) {
         res.status(400);
