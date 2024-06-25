@@ -12,6 +12,8 @@ axiosInstance.interceptors.request.use(
       config.headers["Authorization"] = `${token}`;
     }
 
+    console.log("config->", config);
+
     config.headers["Content-Type"] = "application/json";
 
     return config;
