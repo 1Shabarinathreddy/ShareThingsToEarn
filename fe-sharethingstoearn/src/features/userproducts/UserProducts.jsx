@@ -1,64 +1,8 @@
-import { PencilSquareIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import React, { useEffect, useState } from "react";
 import EditProductModal from "./EditProductModal";
 import AlertModal from "../../components/alertModal/AlertModal";
 import { deleteItem, getUserProducts } from "../../api/loginapi";
-import PageNotFound from "../pagenotfound/PageNotFound";
 import { toast } from "react-toastify";
-
-const products = [
-  {
-    id: 1,
-    title: "Earthen Bottle",
-    href: "#",
-    rentalPrice: "$48",
-    ItemImage:
-      "https://tailwindui.com/img/ecommerce-images/category-page-04-image-card-01.jpg",
-    imageAlt:
-      "Tall slender porcelain bottle with natural clay textured body and cork stopper.",
-  },
-  {
-    id: 2,
-    name: "Nomad Tumbler",
-    href: "#",
-    rentalPrice: "$35",
-    ItemImage:
-      "https://tailwindui.com/img/ecommerce-images/category-page-04-image-card-02.jpg",
-    imageAlt:
-      "Olive drab green insulated bottle with flared screw lid and flat top.",
-  },
-  {
-    id: 3,
-    name: "Focus Paper Refill",
-    href: "#",
-    rentalPrice: "$89",
-    ItemImage:
-      "https://tailwindui.com/img/ecommerce-images/category-page-04-image-card-03.jpg",
-    imageAlt:
-      "Person using a pen to cross a task off a productivity paper card.",
-  },
-
-  {
-    id: 3,
-    name: "Focus Paper Refill",
-    href: "#",
-    rentalPrice: "$89",
-    ItemImage:
-      "https://tailwindui.com/img/ecommerce-images/category-page-04-image-card-03.jpg",
-    imageAlt:
-      "Person using a pen to cross a task off a productivity paper card.",
-  },
-  {
-    id: 3,
-    name: "Focus Paper Refill",
-    href: "#",
-    rentalPrice: "$89",
-    ItemImage:
-      "https://tailwindui.com/img/ecommerce-images/category-page-04-image-card-03.jpg",
-    imageAlt:
-      "Person using a pen to cross a task off a productivity paper card.",
-  },
-];
 
 const UserProducts = () => {
   const [isOpenValue, setIsopen] = useState({ isOpen: false });

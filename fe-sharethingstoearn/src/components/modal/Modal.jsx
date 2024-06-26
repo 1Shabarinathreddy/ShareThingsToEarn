@@ -6,36 +6,6 @@ import { bookItem } from "../../api/loginapi";
 import moment from "moment";
 import { toast } from "react-toastify";
 
-const product = {
-  name: "Basic Tee 6-Pack ",
-  price: "192",
-  rating: 3.9,
-  reviewCount: 117,
-  href: "#",
-  imageSrc:
-    "https://tailwindui.com/img/ecommerce-images/product-quick-preview-02-detail.jpg",
-  imageAlt: "Two each of gray, white, and black shirts arranged on table.",
-  colors: [
-    { name: "White", class: "bg-white", selectedClass: "ring-gray-400" },
-    { name: "Gray", class: "bg-gray-200", selectedClass: "ring-gray-400" },
-    { name: "Black", class: "bg-gray-900", selectedClass: "ring-gray-900" },
-  ],
-  sizes: [
-    { name: "XXS", inStock: true },
-    { name: "XS", inStock: true },
-    { name: "S", inStock: true },
-    { name: "M", inStock: true },
-    { name: "L", inStock: true },
-    { name: "XL", inStock: true },
-    { name: "XXL", inStock: true },
-    { name: "XXXL", inStock: false },
-  ],
-};
-
-function classNames(...classes) {
-  return classes.filter(Boolean).join(" ");
-}
-
 export default function Modal({
   isOpen,
   handleModal,
@@ -119,40 +89,10 @@ export default function Modal({
               <div className="grid w-full grid-cols-1 items-start gap-x-6 gap-y-8 sm:grid-cols-12 lg:gap-x-8">
                 <div className="aspect-h-3 aspect-w-2 overflow-hidden rounded-lg bg-gray-100 sm:col-span-4 lg:col-span-5">
                   <img
-                    src={activeItem?.ItemImage || product.imageSrc}
+                    src={activeItem?.ItemImage}
                     alt="product"
                     className="object-cover object-center"
                   />
-                  {/* <div
-                    className="mt-1 d-flex bg-white"
-                    style={{ border: "2px solid white" }}
-                  >
-                    <div className="m-2">
-                      <img
-                        src={product.imageSrc}
-                        alt={product.imageAlt}
-                        width={60}
-                        className="object-cover object-cente"
-                      />
-                    </div>
-                    <div className="m-2">
-                      <img
-                        src={product.imageSrc}
-                        alt={product.imageAlt}
-                        width={60}
-                        className="object-cover object-center"
-                      />
-                    </div>
-
-                    <div className="m-2">
-                      <img
-                        src={product.imageSrc}
-                        alt={product.imageAlt}
-                        width={60}
-                        className="object-cover object-center"
-                      />
-                    </div>
-                  </div> */}
                 </div>
                 <div className="sm:col-span-8 lg:col-span-7">
                   <h2 className="text-2xl font-bold text-gray-900 sm:pr-12">
