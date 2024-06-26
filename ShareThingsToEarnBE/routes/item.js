@@ -56,7 +56,7 @@ async function getItems (req, res) {
 
 async function getItemListToBook (req, res) {
     try {
-        const result = await listItemsToBook(req.userId);
+        const result = await listItemsToBook(req.query.userId);
         res.send(result);
     } catch (error) {
         res.status(400);

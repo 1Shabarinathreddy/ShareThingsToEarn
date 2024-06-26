@@ -21,7 +21,8 @@ module.exports = (sequelize, DataTypes) => {
     address: DataTypes.STRING,
     country: DataTypes.STRING,
     dateOfBirth: DataTypes.DATE,
-    pinCode: DataTypes.INTEGER
+    pinCode: DataTypes.INTEGER,
+    role: DataTypes.ENUM('User', 'Admin')
   }, {
     sequelize,
     modelName: 'User',

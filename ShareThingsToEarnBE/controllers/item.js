@@ -1,6 +1,7 @@
 const models =  require('../models');
 const Op = require('sequelize').Op;
 const { BlobServiceClient } = require('@azure/storage-blob');
+const { query } = require('express');
 
 // Azure Blob Storage setup
 const AZURE_STORAGE_CONNECTION_STRING = process.env.AZURE_STORAGE_CONNECTION_STRING;
@@ -140,18 +141,26 @@ async function listCategories() {
 
 async function listItemsToBook(userId) {
     try {
-        const userExists = await models.User.findByPk(userId);
-        if(!userExists) throw new Error('User not exists');
-        if (userExists.phoneNumber === null) throw new Error('Please update your profile to proceed further');
         const today = new Date();
         today.setUTCHours(0, 0, 0, 0);
-        const items = await models.Item.findAndCountAll({
-            where: { userId: {
-                [Op.ne]: userId
-            }, availabilityEndDate: {
+        let queryObj = {
+            availabilityEndDate: {
                 [Op.gt]: today
             }, isRequested: false
-        },
+        }
+        console.log(userId)
+        if(userId !== undefined) {
+            console.log(userId)
+            const userExists = await models.User.findByPk(userId);
+            if(!userExists) throw new Error('User not exists');
+            if (userExists.phoneNumber === null) throw new Error('Please update your profile to proceed further');
+            queryObj.userId = {
+                [Op.ne]: userId
+            }
+        }
+        
+        const items = await models.Item.findAndCountAll({
+            where: queryObj,
             include: [
                 {
                     model: models.Category,

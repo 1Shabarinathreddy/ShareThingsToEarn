@@ -13,7 +13,7 @@ router.get('/profile', validateToken, getProfile);
 router.put('/profile', validateToken, updateProfile);
 router.post('/reset-password', resetPassword);
 
-router.get('/categories', validateToken, getCategories);
+router.get('/categories', getCategories);
 
 // Initialize multer for file uploads
 const upload = multer({ dest: 'uploads/' });
@@ -24,7 +24,7 @@ router.put('/item/:id', upload.single('file'), validateToken, editItem);
 router.delete('/item/:id', validateToken, deleteItem);
 
 // Items needs to list in the dashboard to book
-router.get('/itemsToBook', validateToken, getItemListToBook);
+router.get('/itemsToBook', getItemListToBook);
 router.post('/book-item', validateToken, bookItem);
 
 // Items taken rent from other users
