@@ -15,27 +15,15 @@ import {
   PopoverPanel,
 } from "@headlessui/react";
 import {
-  ArrowPathIcon,
   Bars3Icon,
-  ChartPieIcon,
-  CursorArrowRaysIcon,
-  FingerPrintIcon,
-  SquaresPlusIcon,
   XMarkIcon,
   HomeIcon,
-  CollectionIcon,
-  ClipboardListIcon,
-  LogoutIcon,
   UserIcon,
   ClipboardDocumentListIcon,
 } from "@heroicons/react/24/outline";
-import {
-  ChevronDownIcon,
-  PhoneIcon,
-  PlayCircleIcon,
-} from "@heroicons/react/20/solid";
+import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import { Link } from "react-router-dom";
-import { getCategories, getItems } from "../../api/loginapi";
+import { getCategories } from "../../api/loginapi";
 import { ArrowRightOnRectangleIcon } from "@heroicons/react/20/solid";
 import { useAuth } from "../../auth/AuthContext";
 
@@ -62,46 +50,10 @@ const userNavigation = [
   },
   {
     name: "Sign out",
-    href: "#",
+    href: "",
+    handleLogout: true,
     icon: <ArrowRightOnRectangleIcon className="h-5 w-5 mr-1" />,
   },
-];
-
-const products = [
-  {
-    name: "Analytics",
-    description: "Bike",
-    href: "#",
-    icon: ChartPieIcon,
-  },
-  {
-    name: "Engagement",
-    description: "Car",
-    href: "#",
-    icon: CursorArrowRaysIcon,
-  },
-  {
-    name: "Security",
-    description: "Electronics",
-    href: "#",
-    icon: FingerPrintIcon,
-  },
-  {
-    name: "Integrations",
-    description: "Kitchen",
-    href: "#",
-    icon: SquaresPlusIcon,
-  },
-  {
-    name: "Automations",
-    description: "Furniture",
-    href: "#",
-    icon: ArrowPathIcon,
-  },
-];
-const callsToAction = [
-  { name: "Watch demo", href: "#", icon: PlayCircleIcon },
-  { name: "Contact sales", href: "#", icon: PhoneIcon },
 ];
 
 function classNames(...classes) {
@@ -111,8 +63,7 @@ function classNames(...classes) {
 export default function NavBar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [categories, setCategories] = useState([]);
-  const [items, setItems] = useState([]);
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, logout } = useAuth();
 
   const userData = JSON.parse(localStorage.getItem("user"));
 
@@ -120,8 +71,6 @@ export default function NavBar() {
     try {
       const data = await getCategories();
       setCategories(data);
-      //   setUser(userData);
-      console.log("user->", data);
     } catch (error) {
       console.error("Error fetching user data:", error);
     }
@@ -140,11 +89,17 @@ export default function NavBar() {
         <div className="flex lg:flex-1">
           <a href="#" className="-m-1.5 p-1.5">
             <span className="sr-only">Your Company</span>
-            <img
+            <Link
+              to="/dashboard"
+              className="text-md font-semibold leading-6 text-gray-900"
+            >
+              Share Things To Earn
+            </Link>
+            {/* <img
               className="h-8 w-auto"
-              src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
+
               alt=""
-            />
+            /> */}
           </a>
         </div>
         <div className="flex lg:hidden">
@@ -232,6 +187,11 @@ export default function NavBar() {
                           focus ? "bg-gray-100" : "",
                           "block px-4 py-2 text-sm text-gray-700 d-flex align-items-center"
                         )}
+                        onClick={() => {
+                          if (item?.handleLogout) {
+                            logout();
+                          }
+                        }}
                       >
                         {item?.icon}
                         {"  "} {item.name}

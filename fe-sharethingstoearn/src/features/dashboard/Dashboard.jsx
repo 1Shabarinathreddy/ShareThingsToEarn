@@ -95,12 +95,13 @@ const Dashboard = () => {
       <div class="display-header-wrapper mb-5">
         <div class="text-content">
           <div className="inside-text-content">
-            <h1>Focus on what matters</h1>
+            <h1>Share Things for Rent</h1>
             <p>
-              All the charts, datepickers, and notifications in the world can't
-              beat checking off some items on a paper card.
+              Share Things for Rent app enables people to list items for rent,
+              allowing others to use these items for a fee and return them after
+              a certain period.
             </p>
-            <button>Shop Productivity</button>
+            <button>Rent Products</button>
           </div>
         </div>
         <div class="image-content">

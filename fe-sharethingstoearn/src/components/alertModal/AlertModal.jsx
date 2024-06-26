@@ -1,10 +1,6 @@
-// Alert.js
-
 import React from "react";
 
 const AlertModal = ({ message, onConfirm, onCancel }) => {
-  // Determine alert color based on type
-
   return (
     <div
       class="relative z-10"
@@ -54,12 +50,6 @@ const AlertModal = ({ message, onConfirm, onCancel }) => {
               </div>
             </div>
             <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-              {/* <button
-                type="button"
-                class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
-              >
-                Deactivate
-              </button> */}
               <button
                 type="button"
                 onClick={onConfirm}

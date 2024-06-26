@@ -17,10 +17,9 @@ import {
   FunnelIcon,
   MinusIcon,
   PlusIcon,
-  Squares2X2Icon,
 } from "@heroicons/react/20/solid";
 import Modal from "../../components/modal/Modal";
-import { bookItem, getItems } from "../../api/loginapi";
+import { getItems } from "../../api/loginapi";
 
 const sortOptions = [
   { name: "Most Popular", href: "#", current: true },
@@ -70,129 +69,6 @@ const filters = [
       { value: "20l", label: "20L", checked: false },
       { value: "40l", label: "40L", checked: true },
     ],
-  },
-];
-
-const products = [
-  {
-    id: 1,
-    title: "Earthen Bottle",
-    href: "#",
-    rentalPrice: "$48",
-    ItemImage:
-      "https://tailwindui.com/img/ecommerce-images/category-page-04-image-card-01.jpg",
-    imageAlt:
-      "Tall slender porcelain bottle with natural clay textured body and cork stopper.",
-  },
-  {
-    id: 2,
-    title: "Nomad Tumbler",
-    href: "#",
-    rentalPrice: "$35",
-    ItemImage:
-      "https://tailwindui.com/img/ecommerce-images/category-page-04-image-card-02.jpg",
-    imageAlt:
-      "Olive drab green insulated bottle with flared screw lid and flat top.",
-  },
-  {
-    id: 3,
-    title: "Focus Paper Refill",
-    href: "#",
-    rentalPrice: "$89",
-    ItemImage:
-      "https://tailwindui.com/img/ecommerce-images/category-page-04-image-card-03.jpg",
-    imageAlt:
-      "Person using a pen to cross a task off a productivity paper card.",
-  },
-  {
-    id: 4,
-    title: "Machined Mechanical Pencil",
-    href: "#",
-    rentalPrice: "$35",
-    ItemImage:
-      "https://tailwindui.com/img/ecommerce-images/category-page-04-image-card-04.jpg",
-    imageAlt:
-      "Hand holding black machined steel mechanical pencil with brass tip and top.",
-  },
-  {
-    id: 1,
-    title: "Earthen Bottle",
-    href: "#",
-    rentalPrice: "$48",
-    ItemImage:
-      "https://tailwindui.com/img/ecommerce-images/category-page-04-image-card-01.jpg",
-    imageAlt:
-      "Tall slender porcelain bottle with natural clay textured body and cork stopper.",
-  },
-  {
-    id: 2,
-    title: "Nomad Tumbler",
-    href: "#",
-    rentalPrice: "$35",
-    ItemImage:
-      "https://tailwindui.com/img/ecommerce-images/category-page-04-image-card-02.jpg",
-    imageAlt:
-      "Olive drab green insulated bottle with flared screw lid and flat top.",
-  },
-  {
-    id: 3,
-    title: "Focus Paper Refill",
-    href: "#",
-    rentalPrice: "$89",
-    ItemImage:
-      "https://tailwindui.com/img/ecommerce-images/category-page-04-image-card-03.jpg",
-    imageAlt:
-      "Person using a pen to cross a task off a productivity paper card.",
-  },
-  {
-    id: 4,
-    title: "Machined Mechanical Pencil",
-    href: "#",
-    rentalPrice: "$35",
-    ItemImage:
-      "https://tailwindui.com/img/ecommerce-images/category-page-04-image-card-04.jpg",
-    imageAlt:
-      "Hand holding black machined steel mechanical pencil with brass tip and top.",
-  },
-  {
-    id: 1,
-    title: "Earthen Bottle",
-    href: "#",
-    rentalPrice: "$48",
-    ItemImage:
-      "https://tailwindui.com/img/ecommerce-images/category-page-04-image-card-01.jpg",
-    imageAlt:
-      "Tall slender porcelain bottle with natural clay textured body and cork stopper.",
-  },
-  {
-    id: 2,
-    title: "Nomad Tumbler",
-    href: "#",
-    rentalPrice: "$35",
-    ItemImage:
-      "https://tailwindui.com/img/ecommerce-images/category-page-04-image-card-02.jpg",
-    imageAlt:
-      "Olive drab green insulated bottle with flared screw lid and flat top.",
-  },
-  {
-    id: 3,
-    title: "Focus Paper Refill",
-    href: "#",
-    rentalPrice: "$89",
-    ItemImage:
-      "https://tailwindui.com/img/ecommerce-images/category-page-04-image-card-03.jpg",
-    imageAlt:
-      "Person using a pen to cross a task off a productivity paper card.",
-  },
-  {
-    id: 4,
-    title: "Machined Mechanical Pencil",
-    href: "#",
-    rentalPrice: "$35",
-    ItemImage:
-      "https://tailwindui.com/img/ecommerce-images/category-page-04-image-card-04.jpg",
-    imageAlt:
-      "Hand holding black machined steel mechanical pencil with brass tip and top.",
   },
 ];
 
