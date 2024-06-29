@@ -30,7 +30,6 @@ const Profile = () => {
   useEffect(() => {
     handleGetProfile();
   }, []);
-  // Validation states
   const [errors, setErrors] = useState({});
 
   const handleProfile = async (formDataToSend, id) => {
@@ -44,7 +43,6 @@ const Profile = () => {
         country: user?.country,
         pinCode: user?.pincode,
       };
-      // formDataToSend.append("file", formData.image);
       const data = await editProfile(payload);
       toast.success("Profile saved succesfully");
       console.log("user->", data);
@@ -53,11 +51,9 @@ const Profile = () => {
     }
   };
 
-  // Function to handle form submission and validation
   const handleSubmit = (event) => {
     event.preventDefault();
     const errors = {};
-    // Example validation: Required fields
     if (!user?.name) {
       errors.name = "Name is required";
     }
@@ -82,7 +78,6 @@ const Profile = () => {
     setErrors(errors);
 
     if (Object.keys(errors).length === 0) {
-      console.log("Form submitted:", user);
       handleProfile();
     }
   };
