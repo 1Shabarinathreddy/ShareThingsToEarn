@@ -1,14 +1,24 @@
 const models = require('../models');
 const Op = require('sequelize').Op;
+const logger = require('../services/logger');
 
 async function addItemRequest(data, userId) {
     try {
         const userExists = await models.User.findByPk(userId);
-        if(!userExists) throw new Error('User not exists');
+        if(!userExists) {
+            logger.error(`User not found`)
+            throw new Error('User not exists');
+        }
         const itemExists = await models.Item.findByPk(data.itemId);
-        if(!itemExists) throw new Error('Item not found');
+        if(!itemExists) {
+            logger.error(`Item not found`)
+            throw new Error('Item not found');
+        }
         const ItemRequestExists = await models.ItemRequest.findOne({where: { itemId: data.itemId, status: 'approved' }});
-        if(ItemRequestExists) throw new Error('Cannot book the item, other user have been requested');
+        if(ItemRequestExists) {
+            logger.error(`Cannot book the item, other user have been requested`)
+            throw new Error('Cannot book the item, other user have been requested');
+        }
         
         data.rentalEndDate = new Date(data.rentalEndDate);
         data.rentalEndDate.setUTCHours(0, 0, 0, 0);
@@ -16,8 +26,14 @@ async function addItemRequest(data, userId) {
         data.rentalStartDate = new Date(data.rentalStartDate);
         data.rentalStartDate.setUTCHours(0,0,0,0);
 
-        if(data.rentalEndDate > itemExists.availabilityEndDate) throw new Error('Please select the item within the availability date');
-        if(data.rentalStartDate < itemExists.availabilityStartDate) throw new Error('Please select the item within the availability date');
+        if(data.rentalEndDate > itemExists.availabilityEndDate) {
+            logger.error(`Please select the item within the availability date`)
+            throw new Error('Please select the item within the availability date');
+        }
+        if(data.rentalStartDate < itemExists.availabilityStartDate) {
+            logger.error(`Please select the item within the availability date`)
+            throw new Error('Please select the item within the availability date');
+        }
 
 
         const ItemRequest = await models.ItemRequest.create({
@@ -25,10 +41,12 @@ async function addItemRequest(data, userId) {
             ...data
         });
         const itemUpdate = await models.Item.update({ isRequested: true, updatedAt: new Date() }, { where: {id: data.itemId } });
-        console.log(itemUpdate)
+
+        logger.info(`Item Request sent successfully`);
+
         return ItemRequest;
     } catch (error) {
-        console.log(error);
+        logger.error(error);
         throw error;
     }
 }
@@ -58,9 +76,10 @@ async function listRequestedItems(userId) {
                 }
             ]
         })
+        logger.info(`Requested Items fetched successfully`);
         return itemRequests;
     } catch(error) {
-        console.log(error);
+         logger.error(error);
         throw error;
     }
 }
@@ -95,9 +114,10 @@ async function listRentalItems(userId) {
             ]
 
         })
+        logger.info(`Rental items fetched successfully`);
         return rentalItems;
     } catch(error) {
-        console.log(error);
+        logger.error(error);
         throw error;
     }
 }
@@ -105,18 +125,25 @@ async function listRentalItems(userId) {
 async function approveOrReject(itemRequestId, data, userId) {
     try {
         const userExists = await models.User.findByPk(userId);
-        if(!userExists) throw new Error('User not exists');
+        if(!userExists) {
+            logger.error(`User not exists`)
+            throw new Error('User not exists');
+        }
         const itemRequestExists = await models.ItemRequest.findOne({where: { id: itemRequestId, status: 'pending' }});
-        if(!itemRequestExists) throw new Error('Item Request not Exists');
+        if(!itemRequestExists) {
+            logger.error(`Item Request not Exists`)
+            throw new Error('Item Request not Exists');
+        }
         await models.ItemRequest.update({status: data.status, updatedAt: new Date}, { where: { id: itemRequestId } })
         if (data.status === 'reject') {
             await models.Item.update({isRequested: false, updatedAt: new Date()}, { where: { id: itemRequestExists.itemId } });
         }
+
         return {
             id: itemRequestId
         };
     } catch(error) {
-        console.log(error);
+        logger.error(error);
         throw error;
     }
 }
@@ -124,18 +151,28 @@ async function approveOrReject(itemRequestId, data, userId) {
 async function itemReturn(itemId, userId) {
     try {
         const userExists = await models.User.findByPk(userId);
-        if(!userExists) throw new Error('User not exists');
+        if(!userExists) {
+            logger.error(`User not exists`)
+            throw new Error('User not exists');
+        }
         const itemExists = await models.Item.findByPk(itemId);
-        if(!itemExists) throw new Error('Item not found');
+        if(!itemExists) {
+            logger.error(`Item not found`)
+            throw new Error('Item not found');
+        }
         const itemRequestExists = await models.ItemRequest.findOne({where: { itemId: itemId, status: 'approved' }});
-        if(!itemRequestExists) throw new Error('No Item is present to Return');
+        if(!itemRequestExists) {
+            logger.error(`No Item is present to Return`)
+            throw new Error('No Item is present to Return');
+        }
         await models.ItemRequest.update({status: 'returned', updatedAt: new Date}, { where: { id: itemRequestExists.id } })
         await models.Item.update({isRequested: false, updatedAt: new Date()}, { where: { id: itemId } });
+        logger.info(`Item returned successfully`);
         return {
             id: itemId
         };
     } catch(error) {
-        console.log(error);
+        logger.error(error);
         throw error;
     }
 }
@@ -164,9 +201,10 @@ async function listRentedItems() {
                 }
             ]
         })
+        logger.info(`Rented items fetched successfully`);
         return itemRequests;
     } catch(error) {
-        console.log(error);
+        logger.error(error);
         throw error;
     }
 }

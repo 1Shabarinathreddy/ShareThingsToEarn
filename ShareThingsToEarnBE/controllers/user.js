@@ -1,6 +1,7 @@
 const models =  require('../models');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const logger = require('../services/logger');
 
 async function register(data) {
     try {
@@ -8,6 +9,7 @@ async function register(data) {
             where: { email: data.email }
         })
         if (userExists) {
+          logger.error('User already registered')
             throw new Error('User already registered');
         }
         const hashPassword = await bcrypt.hashSync(data.password, 10);
@@ -17,12 +19,13 @@ async function register(data) {
             email: data.email,
             role: 'User'
         })
+        logger.info(`User registered successfully`);
         return {
             email: data.email,
             userName: data.userName
         }
     } catch (error) {
-        console.log(error);
+        logger.error(error);
         throw error;
     }
 }
@@ -46,6 +49,7 @@ async function login(data) {
                 expiresIn: "7d",
               });
 
+              logger.info(`Login successful`)
               return {
                 statusCode: 200,
                 message: {
@@ -55,6 +59,7 @@ async function login(data) {
                 }
               };
             } else {
+              logger.error(`Authentication failed`)
               return {
                 statusCode: 401,
                 message: {
@@ -63,6 +68,7 @@ async function login(data) {
               };
             }
           } else {
+            logger.error(`Authentication failed`)
             return {
               statusCode: 401,
               message: {
@@ -71,7 +77,7 @@ async function login(data) {
             };
           }
     } catch (error) {
-        console.log(error);
+       logger.error(error);
         throw error;
     }
 }
@@ -79,6 +85,7 @@ async function login(data) {
 async function validateToken(req, res, next) {
   const token = req.headers['authorization'];
   if (!token) {
+    logger.error(`No token provided`);
     return res.status(403).send({ message: 'No token provided!' });
   }
   jwt.verify(token, process.env.secret, function (err, decoded) {
@@ -86,6 +93,7 @@ async function validateToken(req, res, next) {
       return err;
     } else {
       req.userId = decoded.sub;
+      logger.info(`Token verified successfully`);
       next();
     }
   });
@@ -93,14 +101,17 @@ async function validateToken(req, res, next) {
 
 async function getUser(userId) {
   try {
-    if(!userId) throw new Error("User Id is required");
+    if(!userId) {
+      logger.error("User Id is required")
+      throw new Error("User Id is required");
+    }
     const userExists = await models.User.findByPk(userId);
     if (!userExists) throw new Error("User not Exists");
     return {
       ...omitPassword(userExists.get())
     }
   } catch(error) {
-    console.log(error);
+    logger.error(error);
     throw error;
   }
 }
@@ -113,11 +124,15 @@ function omitPassword(user) {
 async function updateUser(data, userId) {
   try {
     const userExists = await models.User.findByPk(userId);
-    if (!userExists) throw new Error("User not Exists");
+    if (!userExists) {
+      logger.error(`User not Exists`);
+      throw new Error("User not Exists");
+    }
     const user = await models.User.update(data, { where: { id: userId }});
+    logger.error('User updated successfully');
     return user;
   } catch (error) {
-    console.log(error);
+    logger.error(error);
     throw error;
   }
 }
@@ -129,6 +144,7 @@ async function passwordReset(email, password) {
       where: { email },
     });
     if (!user) {
+      logger.error(`User not found`)
       throw new Error("User not found");
     }
     
@@ -140,12 +156,13 @@ async function passwordReset(email, password) {
       { where: { id: user.id } }
       );
 
+    logger.info(`Password updated successfully`);
     return {
       id: user.id,
       email: email,
     };
   } catch (err) {
-    console.log(err);
+    logger.error(err);
     throw err;
   }
 }
@@ -155,16 +172,18 @@ const checkRole = (roles) => {
     try {
       const user = await models.User.findByPk(req.userId); // assuming userId is set in req object
       if (!user) {
+        logger.error(`User not found`)
         return res.status(404).json({ message: 'User not found' });
       }
 
       if (!roles.includes(user.role)) {
+        logger.error(`Access denied`)
         return res.status(403).json({ message: 'Access denied' });
       }
 
       next();
     } catch (error) {
-      console.error('Error in role middleware:', error);
+      logger.error('Error in role middleware:', error);
       res.status(500).json({ message: 'Internal server error' });
     }
   };
@@ -180,7 +199,7 @@ async function listUsers() {
     })
     return result;
   } catch(error) {
-    console.log(error);
+    logger.error(error);
     throw error;
   }
 }
