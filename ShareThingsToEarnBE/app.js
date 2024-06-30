@@ -1,9 +1,9 @@
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
+const logger  = require('./services/logger');
 
-try {
-    const port = 3000
+const port = 3000
 const routeHandler = require('./routes/index')
 const cors = require('cors');
 
@@ -24,8 +24,6 @@ app.get('/', (req, res) => {
 app.use('/', routeHandler)
 
 app.listen(port, () => {
-    console.log(`Server listening at port ${port}`)
+    logger.info(`Server listening at port ${port}`);
 })
-} catch (error) {
-    console.log(error)
-}
+

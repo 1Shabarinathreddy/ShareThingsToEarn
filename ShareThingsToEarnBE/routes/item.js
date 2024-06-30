@@ -28,7 +28,6 @@ const editItemSchema = Joi.object({
 
 async function addItem (req, res) {
     try {
-        console.log(req.body);
         const data = req.body;
         const { error, value } = addItemSchema.validate(data);
         if (error) {
