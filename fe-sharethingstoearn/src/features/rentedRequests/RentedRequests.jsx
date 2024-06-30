@@ -6,11 +6,40 @@ import {
 } from "../../api/loginapi";
 import moment from "moment";
 import AlertModal from "../../components/alertModal/AlertModal";
+import ListOfUsersForItem from "./ListOfUsersForItem";
 
 const RentedRequests = () => {
   const [rentedRequestedItems, setRentedRequestedItems] = useState([]);
+  const [isOpenValue, setIsopen] = useState(false);
+  const [activeItem, setActiveItem] = useState(null);
+
+  const handleModal = () => {
+    setIsopen((prev) => !prev);
+  };
+
   const [activeStatus, setActiveStatus] = useState(null);
   const [alertModal, setAlertModal] = useState(false);
+  const handleStatus = (type) => {
+    let alertColorClasses = "";
+    switch (type) {
+      case "approved":
+        alertColorClasses =
+          "inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20";
+        break;
+      case "reject":
+        alertColorClasses =
+          "inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/10";
+        break;
+      case "pending":
+        alertColorClasses =
+          "inline-flex items-center rounded-md bg-yellow-50 px-2 py-1 text-xs font-medium text-yellow-800 ring-1 ring-inset ring-yellow-600/20";
+        break;
+      default:
+        alertColorClasses =
+          "inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10";
+    }
+    return alertColorClasses;
+  };
 
   const handleGetRequestedItems = async () => {
     try {
@@ -53,14 +82,20 @@ const RentedRequests = () => {
           <h2 className="sr-only">Products</h2>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-2xl font-bold text-gray-900">
-              Your Rented Products
+              Rental Requests
             </h2>
           </div>
           <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
             {rentedRequestedItems?.length ? (
               rentedRequestedItems?.map((product) => (
                 <div key={product?.id} className="group">
-                  <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg bg-gray-200 xl:aspect-h-8 xl:aspect-w-7">
+                  <div
+                    onClick={() => {
+                      setActiveItem(product);
+                      handleModal();
+                    }}
+                    className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg bg-gray-200 xl:aspect-h-8 xl:aspect-w-7"
+                  >
                     <img
                       src={
                         product?.ItemImage?.imageUrl ||
@@ -70,29 +105,42 @@ const RentedRequests = () => {
                       className="h-full w-full object-cover object-center group-hover:opacity-75 image-wrapper"
                     />
                   </div>
-                  <h3 className="mt-4 text-sm text-gray-700">
+                  <h3
+                    onClick={() => {
+                      setActiveItem(product);
+                      handleModal();
+                    }}
+                    className="mt-4 text-sm text-gray-700"
+                  >
                     {product?.title || "-"}
                   </h3>
                   <div className="flex justify-between items-center">
                     <p className="mt-1 text-lg font-medium text-gray-900">
-                      ₹ {product?.rentalPrice}/-
+                      € {product?.rentalPrice}/-
                     </p>
+                    <div className="flex justify-end">
+                      <span class={` ${handleStatus(product?.status)}`}>
+                        pending
+                      </span>
+                    </div>
                   </div>
                   {/* <p className="text-sm text-gray-600">
-                    Requested by: {product?.ItemRequests?.userName}
+                    Rental Period:{product?.rentalPeriod}
                   </p> */}
                   <p className="text-sm text-gray-600">
-                    Rental Period:{product?.rentalPeriod}
+                    Availbility:{" "}
+                    {moment(product?.availabilityStartDate)?.format("DD/MM/YY")}{" "}
+                    to{" "}
+                    {moment(product?.availabilityEndDate)?.format("DD/MM/YY")}
                   </p>
-                  <p className="text-sm text-gray-600">
-                    Duration:{" "}
-                    {moment(product?.rentalStartDate)?.format("DD/MM/YY")} to{" "}
-                    {moment(product?.rentalEndDate)?.format("DD/MM/YY")}
-                  </p>
+
                   <div className="flex mt-2 justify-end">
                     <div
                       onClick={() => {
-                        setActiveStatus({ status: "accept", id: product?.id });
+                        setActiveStatus({
+                          status: "approved",
+                          id: product?.ItemRequests?.[0]?.id,
+                        });
                         setAlertModal(true);
                       }}
                     >
@@ -113,7 +161,10 @@ const RentedRequests = () => {
                     </div>
                     <div
                       onClick={() => {
-                        setActiveStatus({ status: "reject", id: product?.id });
+                        setActiveStatus({
+                          status: "reject",
+                          id: product?.ItemRequests?.[0]?.id,
+                        });
                         setAlertModal(true);
                       }}
                     >
@@ -161,6 +212,16 @@ const RentedRequests = () => {
           message={`Are you sure you want ${activeStatus?.status}?`}
           onConfirm={onConfirm}
           onCancel={onCancel}
+        />
+      )}
+
+      {isOpenValue && (
+        <ListOfUsersForItem
+          isOpen={isOpenValue}
+          handleModal={handleModal}
+          activeItem={activeItem}
+          setActiveItem={setActiveItem}
+          fetchItems={handleGetRequestedItems}
         />
       )}
     </div>

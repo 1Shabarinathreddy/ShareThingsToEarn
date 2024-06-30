@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import "./login.scss";
 import { Link, useNavigate } from "react-router-dom";
-import { UserIcon } from "@heroicons/react/24/outline";
 import { useAuth } from "../../auth/AuthContext";
 import { postLogin } from "../../api/loginapi";
 import { toast } from "react-toastify";
@@ -20,7 +19,11 @@ const Login = () => {
       localStorage.setItem("user", JSON.stringify(userData));
       login();
       toast.success("Login successfully");
-      navigate("/dashboard");
+      if (userData?.role === "Admin") {
+        navigate("/");
+      } else {
+        navigate("/");
+      }
     } catch (error) {
       toast.error(error?.response?.data?.error);
       console.error("Error fetching user data:", error?.error);
@@ -54,7 +57,6 @@ const Login = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (validateForm()) {
-      console.log("Form submitted");
       handleLogin();
     }
   };
@@ -83,7 +85,6 @@ const Login = () => {
                 type="email"
                 autoComplete="email"
                 value={email}
-                onBlur={validateForm}
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 className="block w-full rounded-md border-0 py-2 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
@@ -102,21 +103,12 @@ const Login = () => {
               >
                 Password
               </label>
-              <div className="text-sm">
-                <a
-                  href="#"
-                  className="font-semibold text-indigo-600 hover:text-indigo-500"
-                >
-                  Forgot password?
-                </a>
-              </div>
             </div>
             <div className="mt-2">
               <input
                 id="password"
                 name="password"
                 type="password"
-                onBlur={validateForm}
                 autoComplete="current-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}

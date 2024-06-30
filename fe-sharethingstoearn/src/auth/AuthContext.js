@@ -4,6 +4,13 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const isLogged = localStorage.getItem("authToken");
+  const userData = localStorage.getItem("user");
+  let user = null;
+  try {
+    user = JSON.parse(userData);
+  } catch (e) {
+    user = null;
+  }
   const [isAuthenticated, setIsAuthenticated] = useState(!!isLogged);
 
   const login = () => setIsAuthenticated(true);
@@ -14,7 +21,9 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
+    <AuthContext.Provider
+      value={{ isAuthenticated, profileDate: user, login, logout }}
+    >
       {children}
     </AuthContext.Provider>
   );

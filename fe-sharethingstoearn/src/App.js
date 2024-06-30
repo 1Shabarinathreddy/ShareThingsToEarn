@@ -1,11 +1,6 @@
 // src/App.js
 import React from "react";
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-} from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./auth/AuthContext";
 import Login from "./components/login/Login";
 import SignUp from "./components/signup/SignUp";
@@ -19,35 +14,26 @@ import UserProducts from "./features/userproducts/UserProducts";
 import RentedRequests from "./features/rentedRequests/RentedRequests";
 import Profile from "./features/profile/Profile";
 import NavBar from "./features/navbar/Navbar";
+import AdminAuth from "./auth/AdminAuth";
+import UserList from "./features/admin/UserList";
+import RentedItems from "./features/admin/RentalItems";
 
 const App = () => {
-  const login = false;
   return (
     <AuthProvider>
       <Router>
         <NavBar />
-
         <Routes>
-          <Route path="/" element={<Navigate to="/dashboard" />} />
-          <Route
-            path="/login"
-            element={
-              <PublicRoute>
-                <Login />
-              </PublicRoute>
-            }
-          />
-          <Route
-            path="/signup"
-            element={
-              <PublicRoute>
-                <SignUp />
-              </PublicRoute>
-            }
-          />
-          <Route path="/dashboard" element={<Layout />}>
+          <Route path="/" element={<Layout />}>
             <Route index element={<Dashboard />} />
-            <Route path="products" element={<Products />} />
+            <Route
+              path="products"
+              element={
+                <PrivateRoute>
+                  <Products />
+                </PrivateRoute>
+              }
+            />
             <Route
               path="rented-items"
               element={
@@ -80,7 +66,55 @@ const App = () => {
                 </PrivateRoute>
               }
             />
+            <Route
+              path="adminprofile"
+              element={
+                <AdminAuth>
+                  <Profile />
+                </AdminAuth>
+              }
+            />
+            <Route
+              path="users"
+              element={
+                <AdminAuth>
+                  <UserList />
+                </AdminAuth>
+              }
+            />
+            <Route
+              path="adminproducts"
+              element={
+                <AdminAuth>
+                  <Products />
+                </AdminAuth>
+              }
+            />
+            <Route
+              path="rentals"
+              element={
+                <AdminAuth>
+                  <RentedItems />
+                </AdminAuth>
+              }
+            />
           </Route>
+          <Route
+            path="/login"
+            element={
+              <PublicRoute>
+                <Login />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/signup"
+            element={
+              <PublicRoute>
+                <SignUp />
+              </PublicRoute>
+            }
+          />
         </Routes>
       </Router>
     </AuthProvider>

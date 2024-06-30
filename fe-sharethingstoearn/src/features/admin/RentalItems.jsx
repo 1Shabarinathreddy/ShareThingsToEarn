@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { getRentedItems, returnItem } from "../../api/loginapi";
+import { getAllRentedItems, returnItem } from "../../api/loginapi";
 import moment from "moment";
 import { toast } from "react-toastify";
+import { useAuth } from "../../auth/AuthContext";
 
-const UserRentedItems = () => {
+const RentedItems = () => {
   const [rentedItems, setRentedItems] = useState([]);
+  const { profileDate } = useAuth();
   const handleStatus = (type) => {
     let alertColorClasses = "";
     switch (type) {
@@ -29,8 +31,7 @@ const UserRentedItems = () => {
 
   const handleGetRentedItems = async () => {
     try {
-      const res = await getRentedItems();
-      console.log("res->", res);
+      const res = await getAllRentedItems();
       setRentedItems([...res?.rows]);
     } catch (e) {
       console.log(e);
@@ -43,7 +44,7 @@ const UserRentedItems = () => {
 
   const handleReturn = async (id) => {
     try {
-      const res = await returnItem(id);
+      await returnItem(id);
       handleGetRentedItems();
       toast.success("Returned succesfully");
     } catch (e) {
@@ -56,9 +57,7 @@ const UserRentedItems = () => {
         <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
           <h2 className="sr-only">Products</h2>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-2xl font-bold text-gray-900">
-              Rental Products
-            </h2>
+            <h2 className="text-2xl font-bold text-gray-900">Rentals</h2>
           </div>
           <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
             {rentedItems?.length ? (
@@ -94,11 +93,11 @@ const UserRentedItems = () => {
                     {moment(product?.rentalEndDate)?.format("DD/MM/YY")}
                   </p>
 
-                  {product?.status === "approved" && (
+                  {profileDate?.role !== "Admin" && (
                     <button
                       type="button"
                       onClick={() => {
-                        handleReturn(product?.itemId);
+                        handleReturn(product?.id);
                       }}
                       className="mt-6 flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-1 text-base font-sm text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                     >
@@ -131,4 +130,4 @@ const UserRentedItems = () => {
   );
 };
 
-export default UserRentedItems;
+export default RentedItems;
