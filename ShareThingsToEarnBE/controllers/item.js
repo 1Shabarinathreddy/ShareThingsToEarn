@@ -63,8 +63,6 @@ async function listItems(userId) {
                 }
             ]
         })
-        console.log(userExists)
-        if (userExists.phoneNumber === null) throw new Error('Please update your profile to proceed further');
         return items;
     } catch(error) {
         console.log(error);
@@ -139,7 +137,7 @@ async function listCategories() {
     }
 }
 
-async function listItemsToBook(userId) {
+async function listItemsToBook(data, userId) {
     try {
         const today = new Date();
         today.setUTCHours(0, 0, 0, 0);
@@ -148,15 +146,18 @@ async function listItemsToBook(userId) {
                 [Op.gt]: today
             }, isRequested: false
         }
-        console.log(userId)
+        
         if(userId !== undefined) {
             console.log(userId)
             const userExists = await models.User.findByPk(userId);
             if(!userExists) throw new Error('User not exists');
-            if (userExists.phoneNumber === null) throw new Error('Please update your profile to proceed further');
             queryObj.userId = {
                 [Op.ne]: userId
             }
+        }
+
+        if(data.categoryId) {
+            queryObj.categoryId = data.categoryId
         }
         
         const items = await models.Item.findAndCountAll({
@@ -176,6 +177,7 @@ async function listItemsToBook(userId) {
                 }
             ]
         })
+
         
         return items;
     } catch(error) {
