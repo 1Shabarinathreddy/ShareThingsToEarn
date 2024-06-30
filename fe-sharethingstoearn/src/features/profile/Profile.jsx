@@ -3,7 +3,6 @@ import { toast } from "react-toastify";
 import { editProfile, getProfile } from "../../api/loginapi";
 
 const Profile = () => {
-  const [profilePicture, setProfilePicture] = useState(null);
   const [user, setUser] = useState({});
 
   const handleGetProfile = async () => {
@@ -30,6 +29,7 @@ const Profile = () => {
   useEffect(() => {
     handleGetProfile();
   }, []);
+
   const [errors, setErrors] = useState({});
 
   const handleProfile = async (formDataToSend, id) => {
@@ -51,9 +51,11 @@ const Profile = () => {
     }
   };
 
+  // Function to handle form submission and validation
   const handleSubmit = (event) => {
     event.preventDefault();
     const errors = {};
+    // Example validation: Required fields
     if (!user?.name) {
       errors.name = "Name is required";
     }
@@ -78,12 +80,9 @@ const Profile = () => {
     setErrors(errors);
 
     if (Object.keys(errors).length === 0) {
+      console.log("Form submitted:", user);
       handleProfile();
     }
-  };
-
-  const handleProfilePictureUpload = (event) => {
-    setProfilePicture(URL.createObjectURL(event.target.files[0]));
   };
 
   const handleChange = (e) => {
@@ -96,30 +95,9 @@ const Profile = () => {
       <h1 className="text-2xl font-bold mb-6 text-center">Profile</h1>
 
       <form onSubmit={handleSubmit}>
-        <div className="flex flex-col lg:flex-row lg:space-x-6">
-          <div className="flex flex-col items-center lg:items-center lg:w-1/3 mb-6 lg:mb-0">
-            <img
-              src={profilePicture || "https://via.placeholder.com/150"}
-              alt="Profile"
-              className="w-40 h-40 rounded-full mb-4"
-            />
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleProfilePictureUpload}
-              className="hidden"
-              id="profilePicture"
-            />
-            <label
-              htmlFor="profilePicture"
-              className="mt-6 flex items-center justify-center rounded-lg border border-transparent bg-indigo-600 text-base py-1 px-6 font-sm text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-            >
-              Upload Profile Picture
-            </label>
-          </div>
-
+        <div className="flex flex-col">
           {/* User Information */}
-          <div className="flex-grow">
+          <div className="">
             <div className="mb-6">
               <label className="block text-gray-700">Name</label>
               <input

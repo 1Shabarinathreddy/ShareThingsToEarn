@@ -63,7 +63,7 @@ html {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-image: url("../src/assests/dash.jpg");
+    background-image: url("../src/assests/sharethings.png");
     background-size: cover;
 }
 
@@ -75,4 +75,55 @@ html {
 .image-wrapper {
     min-height: 285px;
     object-fit: fill;
+}
+
+.user-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.user-card {
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 20px;
+    width: 200px;
+    text-align: center;
+}
+
+.user-image {
+    margin-bottom: 10px;
+}
+
+.user-image img {
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+}
+
+.user-details h2 {
+    margin: 10px 0;
+}
+
+.api-loading-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 99;
+}
+
+table {
+    th {
+        color: #7975c0 !important;
+        font-size: 14px !important;
+    }
+    td {
+        font-size: 14px !important;
+    }
 }

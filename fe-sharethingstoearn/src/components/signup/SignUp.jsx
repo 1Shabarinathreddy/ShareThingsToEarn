@@ -40,19 +40,6 @@ const SignUp = () => {
       valid = false;
     }
 
-    // if (!formData.phone) {
-    //   formErrors.phone = "Phone number is required";
-    //   valid = false;
-    // } else if (!/^\d{10}$/.test(formData.phone)) {
-    //   formErrors.phone = "Phone number is invalid";
-    //   valid = false;
-    // }
-
-    // if (!formData.address) {
-    //   formErrors.address = "Address is required";
-    //   valid = false;
-    // }
-
     setErrors(formErrors);
     return valid;
   };
@@ -60,7 +47,6 @@ const SignUp = () => {
   const fetchItems = async () => {
     try {
       const data = await createAccount(formData);
-      console.log("user->", data);
       setFormData({
         userName: "",
         email: "",

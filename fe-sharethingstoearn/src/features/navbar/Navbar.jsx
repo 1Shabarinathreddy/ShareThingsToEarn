@@ -22,36 +22,39 @@ import {
   ClipboardDocumentListIcon,
 } from "@heroicons/react/24/outline";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { getCategories } from "../../api/loginapi";
 import { ArrowRightOnRectangleIcon } from "@heroicons/react/20/solid";
 import { useAuth } from "../../auth/AuthContext";
+import Logo from "../../assests/logo.png";
+import axiosInstance from "../../api/axiosInstance";
+import { MutatingDots } from "react-loader-spinner";
 
-const userNavigation = [
+let userNavigation = [
   {
     name: "Your Profile",
-    href: "/dashboard/profile",
+    href: "/profile",
     icon: <UserIcon className="h-5 w-5 mr-1" />,
   },
   {
     name: "Rental Proudcts",
-    href: "/dashboard/rented-items",
+    href: "/rented-items",
     icon: <ClipboardDocumentListIcon className="h-5 w-5 mr-1" />,
   },
   {
     name: "Your Products",
-    href: "/dashboard/user-items",
+    href: "/user-items",
     icon: <HomeIcon className="h-5 w-5 mr-1" />,
   },
   {
     name: "Rental Requests",
-    href: "/dashboard/rental-requests",
+    href: "/rental-requests",
     icon: <ClipboardDocumentListIcon className="h-5 w-5 mr-1" />,
   },
   {
     name: "Sign out",
-    href: "",
-    handleLogout: true,
+    href: "#",
+    handleFunc: true,
     icon: <ArrowRightOnRectangleIcon className="h-5 w-5 mr-1" />,
   },
 ];
@@ -63,9 +66,18 @@ function classNames(...classes) {
 export default function NavBar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [categories, setCategories] = useState([]);
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, logout, profileDate } = useAuth();
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   const userData = JSON.parse(localStorage.getItem("user"));
+
+  if (userData?.role === "Admin") {
+    userNavigation[0].href = "/adminprofile";
+    delete userNavigation[1];
+    delete userNavigation[2];
+    delete userNavigation[3];
+  }
 
   const fetchUserData = async () => {
     try {
@@ -78,29 +90,68 @@ export default function NavBar() {
 
   useEffect(() => {
     fetchUserData();
+    axiosInstance.interceptors.request.use(
+      function (config) {
+        setLoading(true);
+        return config;
+      },
+      function (error) {
+        setLoading(false);
+        return Promise.reject(error);
+      }
+    );
+
+    axiosInstance.interceptors.response.use(
+      function (response) {
+        setLoading(false);
+        return response;
+      },
+      function (error) {
+        setLoading(false);
+        console.log("intercept", error);
+        return Promise.reject(error);
+      }
+    );
   }, []);
 
   return (
     <header className="bg-white">
+      {loading && (
+        <>
+          <div className="api-loading-wrapper">
+            <MutatingDots
+              visible={true}
+              height="100"
+              width="100"
+              color="rgb(79 70 229 / var(--tw-bg-opacity))"
+              secondaryColor="rgb(79 70 229 / var(--tw-bg-opacity))"
+              radius="12.5"
+              ariaLabel="mutating-dots-loading"
+              wrapperStyle={{}}
+              wrapperClass=""
+            />
+          </div>
+        </>
+      )}
       <nav
         className="mx-auto flex  items-center justify-between p-6 lg:px-8 border-b border-gray-200"
         aria-label="Global"
       >
-        <div className="flex lg:flex-1">
-          <a href="#" className="-m-1.5 p-1.5">
-            <span className="sr-only">Your Company</span>
-            <Link
-              to="/dashboard"
-              className="text-md font-semibold leading-6 text-gray-900"
-            >
-              Share Things To Earn
-            </Link>
-            {/* <img
-              className="h-8 w-auto"
-
+        <div
+          onClick={() => {
+            navigate("/");
+          }}
+          className="flex lg:flex-1 align-items-center"
+        >
+          <div className="cursor-pointer">
+            <img
+              style={{ height: "32px" }}
+              className=" w-auto"
+              src={Logo}
               alt=""
-            /> */}
-          </a>
+            />
+          </div>
+          <h6 style={{ fontWeight: 700 }}> ShareThingsToEarn</h6>
         </div>
         <div className="flex lg:hidden">
           <button
@@ -112,66 +163,82 @@ export default function NavBar() {
             <Bars3Icon className="h-6 w-6" aria-hidden="true" />
           </button>
         </div>
-        <PopoverGroup className="hidden lg:flex lg:gap-x-12">
-          <Popover className="relative">
-            <PopoverButton className="flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900">
-              Categories
-              <ChevronDownIcon
-                className="h-5 w-5 flex-none text-gray-400"
-                aria-hidden="true"
-              />
-            </PopoverButton>
+        {isAuthenticated && profileDate?.role === "User" && (
+          <PopoverGroup className="hidden lg:flex lg:gap-x-12">
+            <Popover className="relative">
+              <PopoverButton className="flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900">
+                Categories
+                <ChevronDownIcon
+                  className="h-5 w-5 flex-none text-gray-400"
+                  aria-hidden="true"
+                />
+              </PopoverButton>
 
-            <PopoverPanel
-              transition
-              className="absolute -left-8 top-full z-10 mt-3 w-screen max-w-44 overflow-hidden  bg-white shadow-lg ring-1 ring-gray-900/5 transition data-[closed]:translate-y-1 data-[closed]:opacity-0 data-[enter]:duration-200 data-[leave]:duration-150 data-[enter]:ease-out data-[leave]:ease-in"
-            >
-              <div className="">
-                {categories?.length &&
-                  categories.map((item) => (
-                    <div
-                      key={item.name}
-                      className="group relative flex items-center gap-x-6 px-3 py-1 rounded-lg text-sm leading-6 hover:bg-gray-50"
-                    >
-                      <div className="flex-auto">
-                        <Link
-                          to="/dashboard/products"
-                          className="mt-1 text-gray-600"
-                        >
-                          {item.name}
-                        </Link>
+              <PopoverPanel
+                transition
+                className="absolute -left-8 top-full z-10 mt-3 w-screen max-w-44 overflow-hidden  bg-white shadow-lg ring-1 ring-gray-900/5 transition data-[closed]:translate-y-1 data-[closed]:opacity-0 data-[enter]:duration-200 data-[leave]:duration-150 data-[enter]:ease-out data-[leave]:ease-in"
+              >
+                <div className="">
+                  {categories?.length &&
+                    categories.map((item) => (
+                      <div
+                        key={item.name}
+                        className="group relative flex items-center gap-x-6 px-3 py-1 rounded-lg text-sm leading-6 hover:bg-gray-50"
+                      >
+                        <div className="flex-auto">
+                          <Link
+                            to="/products"
+                            state={{ item }}
+                            className="mt-1 text-gray-600"
+                          >
+                            {item.name}
+                          </Link>
+                        </div>
                       </div>
-                    </div>
-                  ))}
-              </div>
-            </PopoverPanel>
-          </Popover>
+                    ))}
+                </div>
+              </PopoverPanel>
+            </Popover>
 
-          <Link
-            to="/dashboard/products"
-            className="text-sm font-semibold leading-6 text-gray-900"
-          >
-            Products
-          </Link>
-          <Link
-            to="/dashboard/products"
-            className="text-sm font-semibold leading-6 text-gray-900"
-          >
-            Features
-          </Link>
-        </PopoverGroup>
+            <Link
+              to="/products"
+              className="text-sm font-semibold leading-6 text-gray-900"
+            >
+              Products
+            </Link>
+          </PopoverGroup>
+        )}
+
+        {isAuthenticated && profileDate?.role === "Admin" && (
+          <>
+            <PopoverGroup className="hidden lg:flex lg:gap-x-12">
+              <Link
+                to="/users"
+                className="text-sm font-semibold leading-6 text-gray-900"
+              >
+                Users
+              </Link>
+              <Link
+                to="/adminproducts"
+                className="text-sm font-semibold leading-6 text-gray-900"
+              >
+                Products
+              </Link>
+              <Link
+                to="/rentals"
+                className="text-sm font-semibold leading-6 text-gray-900"
+              >
+                Rentals
+              </Link>
+            </PopoverGroup>
+          </>
+        )}
         <div className="hidden lg:flex lg:flex-1 lg:justify-end items-center">
           {isAuthenticated ? (
             <Menu as="div" className="relative ml-3">
               <div>
-                <MenuButton className="relative flex max-w-xs items-center rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
-                  <span className="absolute -inset-1.5" />
-                  <span className="sr-only">Open user menu</span>
-                  <img
-                    className="h-8 w-8 rounded-full"
-                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt=""
-                  />
+                <MenuButton className="relative flex max-w-xs items-center   text-sm ">
+                  <UserIcon className="h-5 w-5 mr-1" />
                 </MenuButton>
               </div>
               <MenuItems
@@ -188,7 +255,7 @@ export default function NavBar() {
                           "block px-4 py-2 text-sm text-gray-700 d-flex align-items-center"
                         )}
                         onClick={() => {
-                          if (item?.handleLogout) {
+                          if (item?.handleFunc) {
                             logout();
                           }
                         }}
@@ -221,14 +288,22 @@ export default function NavBar() {
         <div className="fixed inset-0 z-10" />
         <DialogPanel className="fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
           <div className="flex items-center justify-between">
-            <Link to="/dashboard" className="-m-1.5 p-1.5">
-              <span className="sr-only">Your Company</span>
-              <img
-                className="h-8 w-auto"
-                src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
-                alt=""
-              />
-            </Link>
+            <div
+              onClick={() => {
+                navigate("/");
+              }}
+              className="flex lg:flex-1 align-items-center"
+            >
+              <div className="cursor-pointer">
+                <img
+                  style={{ height: "32px" }}
+                  className=" w-auto"
+                  src={Logo}
+                  alt=""
+                />
+              </div>
+              <h6 style={{ fontWeight: 700 }}> ShareThinsToEarn</h6>
+            </div>
             <button
               type="button"
               className="-m-2.5 rounded-md p-2.5 text-gray-700"
@@ -240,49 +315,71 @@ export default function NavBar() {
           </div>
           <div className="mt-6 flow-root">
             <div className="-my-6 divide-y divide-gray-500/10">
-              <div className="space-y-2 py-6">
-                <Disclosure as="div" className="-mx-3">
-                  {({ open }) => (
-                    <>
-                      <DisclosureButton className="flex w-full items-center justify-between rounded-lg py-2 pl-3 pr-3.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">
-                        Categories
-                        <ChevronDownIcon
-                          className={classNames(
-                            open ? "rotate-180" : "",
-                            "h-5 w-5 flex-none"
-                          )}
-                          aria-hidden="true"
-                        />
-                      </DisclosureButton>
-                      <DisclosurePanel className="mt-2 space-y-2">
-                        {categories?.length &&
-                          categories.map((item) => (
-                            <Link
-                              key={item.name}
-                              as="a"
-                              to="/dashboard/products"
-                              className="block rounded-lg py-2 pl-6 pr-3 text-sm font-semibold leading-7 text-gray-900 hover:bg-gray-50"
-                            >
-                              {item.name}
-                            </Link>
-                          ))}
-                      </DisclosurePanel>
-                    </>
-                  )}
-                </Disclosure>
-                <Link
-                  to="/dashboard/products"
-                  className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
-                >
-                  Products
-                </Link>
-                <Link
-                  to="/dashboard/products"
-                  className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
-                >
-                  Features
-                </Link>
-              </div>
+              {isAuthenticated && profileDate?.role === "Admin" && (
+                <>
+                  <div className="space-y-2 py-6">
+                    <Link
+                      to="/user"
+                      className="text-sm font-semibold leading-6 text-gray-900"
+                    >
+                      Users
+                    </Link>
+                    <br />
+                    <Link
+                      to="/adminproducts"
+                      className="text-sm font-semibold leading-6 text-gray-900"
+                    >
+                      Products
+                    </Link>
+                    <br />
+                    <Link
+                      to="/rentals"
+                      className="text-sm font-semibold leading-6 text-gray-900"
+                    >
+                      Rentals
+                    </Link>
+                  </div>
+                </>
+              )}
+              {isAuthenticated && profileDate?.role === "User" && (
+                <div className="space-y-2 py-6">
+                  <Disclosure as="div" className="-mx-3">
+                    {({ open }) => (
+                      <>
+                        <DisclosureButton className="flex w-full items-center justify-between rounded-lg py-2 pl-3 pr-3.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">
+                          Categories
+                          <ChevronDownIcon
+                            className={classNames(
+                              open ? "rotate-180" : "",
+                              "h-5 w-5 flex-none"
+                            )}
+                            aria-hidden="true"
+                          />
+                        </DisclosureButton>
+                        <DisclosurePanel className="mt-2 space-y-2">
+                          {categories?.length &&
+                            categories.map((item) => (
+                              <Link
+                                key={item.name}
+                                as="a"
+                                to="/products"
+                                className="block rounded-lg py-2 pl-6 pr-3 text-sm font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                              >
+                                {item.name}
+                              </Link>
+                            ))}
+                        </DisclosurePanel>
+                      </>
+                    )}
+                  </Disclosure>
+                  <Link
+                    to="/products"
+                    className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                  >
+                    Products
+                  </Link>
+                </div>
+              )}
               <div className="py-6">
                 {isAuthenticated ? (
                   <Disclosure as="div" className="-mx-3">

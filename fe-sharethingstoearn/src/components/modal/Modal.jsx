@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-
+import Logo from "../../assests/logo.png";
 import { bookItem } from "../../api/loginapi";
 import moment from "moment";
 import { toast } from "react-toastify";
+import { useAuth } from "../../auth/AuthContext";
 
 export default function Modal({
   isOpen,
@@ -14,12 +15,11 @@ export default function Modal({
   fetchItems,
 }) {
   const [requestData, setRequestData] = useState({});
-  console.log("active Item->", activeItem);
+  const { profileDate } = useAuth();
 
   const handleBookItemApi = async (payload) => {
     try {
       const res = await bookItem(payload);
-      console.log("response->", res);
       toast.success("Requested successfully");
       setActiveItem(null);
       fetchItems();
@@ -89,7 +89,7 @@ export default function Modal({
               <div className="grid w-full grid-cols-1 items-start gap-x-6 gap-y-8 sm:grid-cols-12 lg:gap-x-8">
                 <div className="aspect-h-3 aspect-w-2 overflow-hidden rounded-lg bg-gray-100 sm:col-span-4 lg:col-span-5">
                   <img
-                    src={activeItem?.ItemImage}
+                    src={activeItem?.ItemImage?.imageUrl || Logo}
                     alt="product"
                     className="object-cover object-center"
                   />
@@ -108,7 +108,7 @@ export default function Modal({
                     </h3>
 
                     <p className="text-2xl text-gray-900">
-                      ₹ {activeItem?.rentalPrice}/day
+                      € {activeItem?.rentalPrice}/day
                     </p>
                   </section>
 
@@ -168,74 +168,78 @@ export default function Modal({
                           {activeItem?.User?.phoneNumber}
                         </p>
                       </div>
-                      <div className="row">
-                        <div className="mb-4 col-sm-12 col-md-6">
-                          <label
-                            htmlFor="rentalStartDate"
-                            className="block text-sm text-gray-700 font-medium mb-2"
+                      {profileDate?.role !== "Admin" && (
+                        <>
+                          {" "}
+                          <div className="row">
+                            <div className="mb-4 col-sm-12 col-md-6">
+                              <label
+                                htmlFor="rentalStartDate"
+                                className="block text-sm text-gray-700 font-medium mb-2"
+                              >
+                                Rental Start Date
+                              </label>
+                              <input
+                                type="date"
+                                id="rentalStartDate"
+                                name="rentalStartDate"
+                                min={moment().format("YYYY-MM-DD")}
+                                max={moment(
+                                  activeItem?.availabilityEndDate
+                                ).format("YYYY-MM-DD")}
+                                value={requestData?.rentalStartDate || null}
+                                onChange={handleChange}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                                required
+                              />
+                            </div>
+                            <div className="mb-4 col-sm-12 col-md-6">
+                              <label
+                                htmlFor="rentalEndDate"
+                                className="block text-sm text-gray-700 font-medium mb-2"
+                              >
+                                Rental End Date
+                              </label>
+                              <input
+                                type="date"
+                                id="rentalEndDate"
+                                name="rentalEndDate"
+                                value={requestData?.rentalEndtDate || null}
+                                onChange={handleChange}
+                                max={moment(
+                                  activeItem?.availabilityEndDate
+                                ).format("YYYY-MM-DD")}
+                                min={moment().format("YYYY-MM-DD")}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                                required
+                              />
+                            </div>
+                          </div>
+                          <div className="mb-4">
+                            <label
+                              htmlFor="notes"
+                              className="block text-sm text-gray-700 font-medium mb-2"
+                            >
+                              Notes
+                            </label>
+                            <textarea
+                              id="notes"
+                              name="notes"
+                              value={requestData?.notes || ""}
+                              onChange={handleChange}
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                              rows="2"
+                            />
+                          </div>
+                          <button
+                            type="button"
+                            onClick={handleRequest}
+                            className="mt-6 flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                           >
-                            Rental Start Date
-                          </label>
-                          <input
-                            type="date"
-                            id="rentalStartDate"
-                            name="rentalStartDate"
-                            min={moment().format("YYYY-MM-DD")}
-                            max={moment(activeItem?.availabilityEndDate).format(
-                              "YYYY-MM-DD"
-                            )}
-                            value={requestData?.rentalStartDate || null}
-                            onChange={handleChange}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                            required
-                          />
-                        </div>
-                        <div className="mb-4 col-sm-12 col-md-6">
-                          <label
-                            htmlFor="rentalEndDate"
-                            className="block text-sm text-gray-700 font-medium mb-2"
-                          >
-                            Rental Start Date
-                          </label>
-                          <input
-                            type="date"
-                            id="rentalEndDate"
-                            name="rentalEndDate"
-                            value={requestData?.rentalEndtDate || null}
-                            onChange={handleChange}
-                            max={moment(activeItem?.availabilityEndDate).format(
-                              "YYYY-MM-DD"
-                            )}
-                            min={moment().format("YYYY-MM-DD")}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                            required
-                          />
-                        </div>
-                      </div>
-                      <div className="mb-4">
-                        <label
-                          htmlFor="notes"
-                          className="block text-sm text-gray-700 font-medium mb-2"
-                        >
-                          Notes
-                        </label>
-                        <textarea
-                          id="notes"
-                          name="notes"
-                          value={requestData?.notes || ""}
-                          onChange={handleChange}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                          rows="2"
-                        />
-                      </div>
-
-                      <button
-                        type="button"
-                        onClick={handleRequest}
-                        className="mt-6 flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                      >
-                        Request to Rent
-                      </button>
+                            Request to Rent
+                          </button>
+                        </>
+                      )}
                     </form>
                   </section>
                 </div>

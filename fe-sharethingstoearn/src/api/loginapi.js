@@ -1,6 +1,18 @@
 import axios from "axios";
 import axiosInstance from "../api/axiosInstance";
 
+import { toast } from "react-toastify";
+
+const handleError = (error) => {
+  toast.error(
+    error?.response?.data?.messsage ||
+      error?.response?.data?.error ||
+      error?.message ||
+      error?.error?.error ||
+      "Something went wrong"
+  );
+};
+
 //Logi API
 export const postLogin = async (data) => {
   try {
@@ -34,9 +46,11 @@ export const getCategories = async () => {
 };
 
 //list of books
-export const getItems = async () => {
+export const getItems = async (id) => {
   try {
-    const response = await axiosInstance.get("/itemsToBook");
+    const response = await axiosInstance.get(
+      `/itemsToBook${id ? `?categoryId=${id}` : ""}`
+    );
     return response.data;
   } catch (error) {
     console.error("Error fetching user data:", error);
@@ -49,12 +63,12 @@ export const bookItem = async (data) => {
     const response = await axiosInstance.post("/book-item", data);
     return response.data;
   } catch (error) {
+    handleError(error);
     console.error("Error fetching user data:", error);
     throw error;
   }
 };
 
-//single items todo
 export const addItem = async (data) => {
   try {
     const response = await axios.post("http://localhost:3000/item", data, {
@@ -65,6 +79,8 @@ export const addItem = async (data) => {
     });
     return response.data;
   } catch (error) {
+    handleError(error);
+
     console.error("Error fetching user data:", error);
     throw error;
   }
@@ -72,7 +88,7 @@ export const addItem = async (data) => {
 
 export const editItem = async (data, id) => {
   try {
-    const response = await axios.put(`"ttp://localhost:3000/item/${id}`, data, {
+    const response = await axios.put(`http://localhost:3000/item/${id}`, data, {
       headers: {
         Authorization: localStorage.getItem("authToken"),
         "Content-Type": "multipart/form-data",
@@ -81,6 +97,8 @@ export const editItem = async (data, id) => {
 
     return response.data;
   } catch (error) {
+    handleError(error);
+
     console.error("Error fetching user data:", error);
     throw error;
   }
@@ -91,12 +109,13 @@ export const deleteItem = async (id) => {
     const response = await axiosInstance.delete(`/item/${id}`);
     return response.data;
   } catch (error) {
+    handleError(error);
+
     console.error("Error fetching user data:", error);
     throw error;
   }
 };
 
-//get user added Products
 export const getUserProducts = async () => {
   try {
     const response = await axiosInstance.get("/item");
@@ -107,12 +126,12 @@ export const getUserProducts = async () => {
   }
 };
 
-//profile
 export const editProfile = async (data) => {
   try {
     const response = await axiosInstance.put("/profile", data);
     return response.data;
   } catch (error) {
+    handleError(error);
     console.error("Error fetching user data:", error);
     throw error;
   }
@@ -139,11 +158,23 @@ export const getRentedItems = async (data) => {
   }
 };
 
+export const getAllRentedItems = async (data) => {
+  try {
+    const response = await axiosInstance.get("/rented-items");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+    throw error;
+  }
+};
+
 export const returnItem = async (id) => {
   try {
     const response = await axiosInstance.put(`/return-item/${id}`);
     return response.data;
   } catch (error) {
+    handleError(error);
+
     console.error("Error fetching user data:", error);
     throw error;
   }
@@ -163,6 +194,18 @@ export const getRequestedItems = async (data) => {
 export const changeStatusRequestedItem = async (params, id) => {
   try {
     const response = await axiosInstance.put(`/update-status/${id}`, params);
+    return response.data;
+  } catch (error) {
+    handleError(error);
+
+    console.error("Error fetching user data:", error);
+    throw error;
+  }
+};
+
+export const getUsersData = async (data) => {
+  try {
+    const response = await axiosInstance.get("/users");
     return response.data;
   } catch (error) {
     console.error("Error fetching user data:", error);

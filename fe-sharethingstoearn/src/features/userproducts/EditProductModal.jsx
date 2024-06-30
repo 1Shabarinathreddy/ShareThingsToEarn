@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-
 import { addItem, editItem, getCategories } from "../../api/loginapi";
 import { toast } from "react-toastify";
+import moment from "moment";
+import Logo from "../../assests/logo.png";
 
 const initialFormData = {
   title: "",
@@ -33,11 +34,8 @@ export default function EditProductModal({
   handleModal,
   handleFetchUserProducts,
 }) {
-  //   const [open, setOpen] = useState(false);
-
   const [formData, setFormData] = useState(isOpen?.product);
 
-  console.log("product->", isOpen?.product, formData);
   const [formErrors, setFormErrors] = useState(initialFormErrors);
   const [categories, setCategories] = useState([]);
 
@@ -49,7 +47,6 @@ export default function EditProductModal({
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-    console.log("file->", file);
     setFormData({ ...formData, image: file });
   };
 
@@ -61,7 +58,6 @@ export default function EditProductModal({
       setFormErrors(initialFormErrors);
       handleFetchUserProducts();
       handleModal();
-      console.log("user->", data);
     } catch (error) {
       console.error("Error fetching user data:", error);
     }
@@ -69,14 +65,12 @@ export default function EditProductModal({
 
   const editProduct = async (formDataToSend, id) => {
     try {
-      // formDataToSend.append("file", formData.image);
       const data = await editItem(formDataToSend, id);
       toast.success("Succedully saved product");
       setFormData(initialFormData);
       setFormErrors(initialFormErrors);
       handleFetchUserProducts();
       handleModal();
-      console.log("user->", data);
     } catch (error) {
       console.error("Error fetching user data:", error);
     }
@@ -84,11 +78,9 @@ export default function EditProductModal({
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Perform validation
     let errors = {};
     let isValid = true;
 
-    // Basic validation example (you can customize based on your requirements)
     if (!formData?.title?.trim()) {
       errors.title = "Title is required";
       isValid = false;
@@ -101,6 +93,10 @@ export default function EditProductModal({
 
     if (!formData?.rentalPrice) {
       errors.rentalPrice = "Rental Price is required";
+      isValid = false;
+    }
+    if (!formData?.categoryId) {
+      errors.categoryId = "Category is required";
       isValid = false;
     }
 
@@ -156,7 +152,6 @@ export default function EditProductModal({
     try {
       const data = await getCategories();
       setCategories(data);
-      console.log("user->", data);
     } catch (error) {
       console.error("Error fetching user data:", error);
     }
@@ -198,70 +193,19 @@ export default function EditProductModal({
               </button>
 
               <div className="grid w-full grid-cols-1 items-start gap-x-6 gap-y-8 sm:grid-cols-12 lg:gap-x-8">
-                <div className="aspect-h-3 aspect-w-2 overflow-hidden rounded-lg bg-gray-100 sm:col-span-4 lg:col-span-5">
-                  {formData?.image ? (
-                    <img
-                      src={
-                        formData?.image?.size
-                          ? URL.createObjectURL(formData?.image)
-                          : formData?.image
-                      }
-                      alt="product"
-                      className="object-cover object-center"
-                    />
-                  ) : (
-                    <div
-                      className="flex justify-center items-center bg-gray-300 animate-pulse"
-                      style={{ height: "450px" }}
-                    >
-                      <svg
-                        className="w-12 h-12 text-gray-400"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M3 7h4l3 5h4l3-5h4M5 19h14M5 13h14M7 13V5h10v8"
-                        />
-                      </svg>
-                    </div>
-                  )}
-                  {/* <div
-                    className="mt-1 d-flex bg-white"
-                    style={{ border: "2px solid white" }}
-                  >
-                    <div className="m-2">
-                      <img
-                        src={product.imageSrc}
-                        alt={product.imageAlt}
-                        width={60}
-                        className="object-cover object-cente"
-                      />
-                    </div>
-                    <div className="m-2">
-                      <img
-                        src={product.imageSrc}
-                        alt={product.imageAlt}
-                        width={60}
-                        className="object-cover object-center"
-                      />
-                    </div>
-
-                    <div className="m-2">
-                      <img
-                        src={product.imageSrc}
-                        alt={product.imageAlt}
-                        width={60}
-                        className="object-cover object-center"
-                      />
-                    </div>
-                  </div> */}
+                <div className="aspect-h-3 aspect-w-2 overflow-hidden rounded-lg  sm:col-span-4 lg:col-span-5">
+                  <img
+                    src={
+                      formData?.image?.size
+                        ? URL.createObjectURL(formData?.image)
+                        : formData?.image || Logo
+                    }
+                    alt="product"
+                    className="object-cover object-center"
+                  />
                 </div>
                 <div className="sm:col-span-8 lg:col-span-7">
-                  <div className="flex justify-center items-center min-h-screen bg-gray-100">
+                  <div className="flex justify-center items-center min-h-screen ">
                     <form
                       onSubmit={handleSubmit}
                       className="bg-white p-8 pt-0 rounded-lg  w-full max-w-lg"
@@ -301,12 +245,15 @@ export default function EditProductModal({
                         >
                           Category
                         </label>
+
                         <select
                           value={formData?.categoryId || ""}
                           name="categoryId"
                           id="categoryId"
+                          disabled={isOpen?.mode !== "new"}
                           onChange={handleChange}
-                          className="block w-full px-3 py-3 border border-gray-300 rounded-lg bg-white shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                          required
+                          className="block w-full px-3  py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                         >
                           <option value="">Select</option>
                           {categories?.map((option) => (
@@ -315,6 +262,16 @@ export default function EditProductModal({
                             </option>
                           ))}
                         </select>
+                        {isOpen?.mode !== "new" && (
+                          <div className="text-danger text-sm">
+                            You are not able to edit the categoty in edit mode
+                          </div>
+                        )}
+                        {formErrors?.categoryId && (
+                          <p className="text-red-500 text-sm mt-1">
+                            {formErrors.categoryId}
+                          </p>
+                        )}
                       </div>
 
                       <div className="mb-4">
@@ -401,6 +358,14 @@ export default function EditProductModal({
                           onChange={handleChange}
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                           required
+                          min={moment().format("YYYY-MM-DD")}
+                          max={
+                            formData?.availabilityEndDate
+                              ? moment(formData?.availabilityEndDate).format(
+                                  "YYYY-MM-DD"
+                                )
+                              : null
+                          }
                         />
                         {formErrors?.availabilityStartDate && (
                           <p className="text-red-500 text-sm mt-1">
@@ -424,6 +389,13 @@ export default function EditProductModal({
                           onChange={handleChange}
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                           required
+                          min={
+                            formData?.availabilityStartDate
+                              ? moment(formData?.availabilityStartDate).format(
+                                  "YYYY-MM-DD"
+                                )
+                              : moment().format("YYYY-MM-DD")
+                          }
                         />
                         {formErrors?.availabilityEndDate && (
                           <p className="text-red-500 text-sm mt-1">
@@ -484,7 +456,10 @@ export default function EditProductModal({
                           name="image"
                           onChange={handleImageChange}
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                          required
+                          required={
+                            isOpen?.mode === "mew" ||
+                            !(formData?.image || formData?.image?.size)
+                          }
                         />
                         {formErrors?.image && (
                           <p className="text-red-500 text-sm mt-1">

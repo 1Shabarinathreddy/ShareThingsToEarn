@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import EditProductModal from "./EditProductModal";
 import AlertModal from "../../components/alertModal/AlertModal";
 import { deleteItem, getUserProducts } from "../../api/loginapi";
+
 import { toast } from "react-toastify";
 
 const UserProducts = () => {
@@ -13,7 +14,6 @@ const UserProducts = () => {
   const handleDeleteItem = async () => {
     try {
       const res = await deleteItem(alertModal?.id);
-      console.log("esponse->", res);
       toast.success("Deleted successfully");
       handleFetchUserProducts();
       setAlertModal(false);
@@ -79,11 +79,11 @@ const UserProducts = () => {
                     />
                   </div>
                   <h3 className="mt-4 text-sm text-gray-700">
-                    {product?.title}
+                    {product?.title || "-"}
                   </h3>
                   <div className="flex justify-between items-center">
                     <p className="mt-1 text-lg font-medium text-gray-900">
-                      {product?.rentalPrice}
+                      € {product?.rentalPrice || "-"}
                     </p>
                     <div className="flex justify-end space-x-2">
                       <div
