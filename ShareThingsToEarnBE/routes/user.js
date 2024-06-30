@@ -13,7 +13,8 @@ const registerSchema = Joi.object({
     userName: Joi.string().required(),
     email: Joi.string().email().required(),
     password: Joi.string().required(),
-    confirmPassword: Joi.ref('password')
+    confirmPassword: Joi.ref('password'),
+    phoneNumber: Joi.string().required(),
 }).with('password', 'confirmPassword');
 
 
@@ -21,7 +22,7 @@ const updateProfileSchema = Joi.object({
     userName: Joi.string(),
     email: Joi.string().email(),
     phoneNumber: Joi.string().required(),
-    dateOfBirth: Joi.string(),
+    dateOfBirth: Joi.string().allow(null, ''),
     address: Joi.string().required(),
     country: Joi.string().required(),
     pinCode: Joi.number().required()
