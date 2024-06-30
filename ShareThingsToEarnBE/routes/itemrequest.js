@@ -5,7 +5,7 @@ const addItemRequestSchema = Joi.object({
     itemId: Joi.number().label('Item Id').required(),
     rentalStartDate: Joi.date().required(),
     rentalEndDate: Joi.date().required(),
-    notes: Joi.string()
+    notes: Joi.string().allow(null, '')
 });
 
 async function bookItem(req, res) {

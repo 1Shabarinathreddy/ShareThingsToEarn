@@ -24,7 +24,7 @@ router.put('/item/:id', upload.single('file'), validateToken, editItem);
 router.delete('/item/:id', validateToken, deleteItem);
 
 // Items needs to list in the dashboard to book
-router.get('/itemsToBook', getItemListToBook);
+router.get('/itemsToBook', validateToken, getItemListToBook);
 router.post('/book-item', validateToken, bookItem);
 
 // Items taken rent from other users
@@ -39,5 +39,6 @@ router.put('/return-item/:id', validateToken, returnItem)
 
 router.get('/users', validateToken, checkRole(['Admin']), userListing);
 router.get('/rented-items', validateToken, checkRole(['Admin']), getRentedItems)
+
 
 module.exports = router;

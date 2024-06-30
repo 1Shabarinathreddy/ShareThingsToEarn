@@ -4,24 +4,24 @@ const { listCategories, createItem, listItems, updateItem, destroyItem, listItem
 const addItemSchema = Joi.object({
     title: Joi.string().label('Title').required(),
     categoryId: Joi.number().label('Category Id').required(),
-    description: Joi.string().allow(null),
+    description: Joi.string().allow(null, ''),
     rentalPrice: Joi.number().required(),
     rentalPeriod: Joi.string().required(),
     availabilityStartDate: Joi.date().required(),
     availabilityEndDate: Joi.date().required(),
-    location: Joi.string().allow(null).required(),
-    notes: Joi.string().allow(null) 
+    location: Joi.string().required(),
+    notes: Joi.string().allow(null, '') 
 });
 
 const editItemSchema = Joi.object({
     title: Joi.string().label('Title'),
-    description: Joi.string().allow(null),
-    rentalPrice: Joi.number().allow(null),
-    rentalPeriod: Joi.string().allow(null),
+    description: Joi.string().allow(null, ''),
+    rentalPrice: Joi.number().allow(null, ''),
+    rentalPeriod: Joi.string().allow(null, ''),
     availabilityStartDate: Joi.date(),
     availabilityEndDate: Joi.date(),
     location: Joi.string(),
-    notes: Joi.string().allow(null)
+    notes: Joi.string().allow(null, '')
 });
 
 async function addItem (req, res) {
@@ -56,7 +56,7 @@ async function getItems (req, res) {
 
 async function getItemListToBook (req, res) {
     try {
-        const result = await listItemsToBook(req.query.userId);
+        const result = await listItemsToBook(req.query, req.userId);
         res.send(result);
     } catch (error) {
         res.status(400);
