@@ -56,10 +56,14 @@ async function listRequestedItems(userId) {
 
 async function listRentalItems(userId) {
     try {
+        let queryObj = {}
         const userExists = await models.User.findByPk(userId);
         if(!userExists) throw new Error('User not exists');
+        if(userExists.role === 'User') {
+            queryObj.userId = userId
+        }
         const rentalItems = await models.Item.findAndCountAll({
-            where: { userId },
+            where: queryObj,
             include: [
                 {
                     model: models.ItemRequest
@@ -71,6 +75,9 @@ async function listRentalItems(userId) {
                 {
                     model: models.ItemImages,
                     attributes: ['imageUrl', 'fileName']
+                },
+                {
+                    model: models.User
                 }
             ]
 
