@@ -7,8 +7,19 @@ async function addItemRequest(data, userId) {
         if(!userExists) throw new Error('User not exists');
         const itemExists = await models.Item.findByPk(data.itemId);
         if(!itemExists) throw new Error('Item not found');
-        const ItemRequestExists = await models.ItemRequest.findOne({where: { itemId: data.itemId, status: 'pending' }});
+        const ItemRequestExists = await models.ItemRequest.findOne({where: { itemId: data.itemId, status: 'approved' }});
         if(ItemRequestExists) throw new Error('Cannot book the item, other user have been requested');
+        
+        data.rentalEndDate = new Date(data.rentalEndDate);
+        data.rentalEndDate.setUTCHours(0, 0, 0, 0);
+
+        data.rentalStartDate = new Date(data.rentalStartDate);
+        data.rentalStartDate.setUTCHours(0,0,0,0);
+
+        if(data.rentalEndDate > itemExists.availabilityEndDate) throw new Error('Please select the item within the availability date');
+        if(data.rentalStartDate < itemExists.availabilityStartDate) throw new Error('Please select the item within the availability date');
+
+
         const ItemRequest = await models.ItemRequest.create({
             requestedUserId: userId,
             ...data
@@ -61,12 +72,14 @@ async function listRentalItems(userId) {
         if(!userExists) throw new Error('User not exists');
         if(userExists.role === 'User') {
             queryObj.userId = userId
+            queryObj.isRequested = true
         }
         const rentalItems = await models.Item.findAndCountAll({
             where: queryObj,
             include: [
                 {
-                    model: models.ItemRequest
+                    model: models.ItemRequest,
+                    where: { status: 'pending' }
                 },
                 {
                     model: models.Category,

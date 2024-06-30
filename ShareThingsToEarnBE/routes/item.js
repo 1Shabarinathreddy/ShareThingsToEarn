@@ -15,13 +15,15 @@ const addItemSchema = Joi.object({
 
 const editItemSchema = Joi.object({
     title: Joi.string().label('Title'),
+    categoryId: Joi.number().label('Category Id').required(),
     description: Joi.string().allow(null, ''),
     rentalPrice: Joi.number().allow(null, ''),
     rentalPeriod: Joi.string().allow(null, ''),
     availabilityStartDate: Joi.date(),
     availabilityEndDate: Joi.date(),
     location: Joi.string(),
-    notes: Joi.string().allow(null, '')
+    notes: Joi.string().allow(null, ''),
+    file: Joi.string().allow(null, '')
 });
 
 async function addItem (req, res) {
