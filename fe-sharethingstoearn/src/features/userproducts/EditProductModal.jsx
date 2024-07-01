@@ -42,7 +42,7 @@ export default function EditProductModal({
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
-    setFormErrors({ ...formErrors, [name]: "" }); // Clear error message when user starts typing
+    setFormErrors({ ...formErrors, [name]: "" });
   };
 
   const handleImageChange = (e) => {
