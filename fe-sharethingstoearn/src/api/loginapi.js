@@ -18,6 +18,7 @@ export const postLogin = async (data) => {
     const response = await axiosInstance.post("/login", data);
     return response.data;
   } catch (error) {
+    handleError(error);
     console.error("Error fetching user data:", error);
     throw error;
   }
@@ -28,6 +29,7 @@ export const createAccount = async (data) => {
     const response = await axiosInstance.post("/register", data);
     return response.data;
   } catch (error) {
+    handleError(error);
     console.error("Error fetching user data:", error);
     throw error;
   }
