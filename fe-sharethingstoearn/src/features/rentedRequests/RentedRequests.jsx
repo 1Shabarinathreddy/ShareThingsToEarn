@@ -124,9 +124,6 @@ const RentedRequests = () => {
                       </span>
                     </div>
                   </div>
-                  {/* <p className="text-sm text-gray-600">
-                    Rental Period:{product?.rentalPeriod}
-                  </p> */}
                   <p className="text-sm text-gray-600">
                     Availbility:{" "}
                     {moment(product?.availabilityStartDate)?.format("DD/MM/YY")}{" "}
