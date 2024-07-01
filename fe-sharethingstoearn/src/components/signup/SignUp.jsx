@@ -9,6 +9,7 @@ const SignUp = () => {
     email: "",
     password: "",
     confirmPassword: "",
+    phoneNumber: "",
   });
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
@@ -37,6 +38,11 @@ const SignUp = () => {
     } else if (formData.confirmPassword !== formData.password) {
       formErrors.confirmPassword =
         "Confirm Password and Password should be equal ";
+
+      valid = false;
+    } else if (!formData.phoneNumber) {
+      formErrors.phoneNumber = "Phone Number is required";
+
       valid = false;
     }
 
@@ -131,7 +137,30 @@ const SignUp = () => {
               )}
             </div>
           </div>
-
+          <div>
+            <label
+              htmlFor="userName"
+              className="block text-sm font-medium leading-6 text-gray-900"
+            >
+              Phone Number
+            </label>
+            <div className="mt-2">
+              <input
+                id="phoneNumber"
+                name="phoneNumber"
+                type="text"
+                value={formData?.phoneNumber || ""}
+                onChange={handleChange}
+                required
+                className="block w-full rounded-md border-gray-300 shadow-sm py-2 px-3 text-gray-900 placeholder-gray-400 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              />
+              {errors.phoneNumber && (
+                <p className="mt-2 text-sm text-red-600">
+                  {errors?.phoneNumber}
+                </p>
+              )}
+            </div>
+          </div>
           <div>
             <label
               htmlFor="password"
@@ -179,54 +208,6 @@ const SignUp = () => {
               )}
             </div>
           </div>
-
-          {/* <div>
-            <label
-              htmlFor="phone"
-              className="block text-sm font-medium leading-6 text-gray-900"
-            >
-              Phone Number
-            </label>
-            <div className="mt-2">
-              <input
-                id="phone"
-                name="phone"
-                type="tel"
-                autoComplete="tel"
-                value={formData.phone}
-                onChange={handleChange}
-                required
-                className="block w-full rounded-md border-gray-300 shadow-sm py-2 px-3 text-gray-900 placeholder-gray-400 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              />
-              {errors.phone && (
-                <p className="mt-2 text-sm text-red-600">{errors.phone}</p>
-              )}
-            </div>
-          </div>
-
-          <div>
-            <label
-              htmlFor="address"
-              className="block text-sm font-medium leading-6 text-gray-900"
-            >
-              Address
-            </label>
-            <div className="mt-2">
-              <textarea
-                id="address"
-                name="address"
-                autoComplete="address"
-                value={formData.address}
-                onChange={handleChange}
-                required
-                className="block w-full rounded-md border-gray-300 shadow-sm py-2 px-3 text-gray-900 placeholder-gray-400 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              />
-              {errors.address && (
-                <p className="mt-2 text-sm text-red-600">{errors.address}</p>
-              )}
-            </div>
-          </div> */}
-
           <div>
             <button
               type="submit"
