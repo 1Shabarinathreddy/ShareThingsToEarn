@@ -191,7 +191,11 @@ const checkRole = (roles) => {
 
 async function listUsers() {
   try {
-    const users = await models.User.findAll();
+    const users = await models.User.findAndCountAll({ where: {
+      role: {
+        [Op.ne]: 'Admin'
+      }
+    }});
     const result = users.map(ele => {
       return {
         ...omitPassword(ele.get())
