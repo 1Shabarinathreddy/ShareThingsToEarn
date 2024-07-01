@@ -25,7 +25,6 @@ const Login = () => {
         navigate("/");
       }
     } catch (error) {
-      toast.error(error?.response?.data?.error);
       console.error("Error fetching user data:", error?.error);
     }
   };
