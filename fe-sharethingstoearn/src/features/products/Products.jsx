@@ -37,6 +37,7 @@ export default function Products() {
         Earn from idle assets with ShareThingsFromRent
       </p>
       <div>
+        {/* Mobile filter dialog */}
         <Dialog
           className="relative z-40 lg:hidden"
           open={mobileFiltersOpen}

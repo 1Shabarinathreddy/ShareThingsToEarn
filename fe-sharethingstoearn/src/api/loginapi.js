@@ -13,6 +13,7 @@ const handleError = (error) => {
   );
 };
 
+//Logi API
 export const postLogin = async (data) => {
   try {
     const response = await axiosInstance.post("/login", data);
@@ -23,6 +24,7 @@ export const postLogin = async (data) => {
   }
 };
 
+//Sign Up API
 export const createAccount = async (data) => {
   try {
     const response = await axiosInstance.post("/register", data);
@@ -43,6 +45,7 @@ export const getCategories = async () => {
   }
 };
 
+//list of books
 export const getItems = async (id) => {
   try {
     const response = await axiosInstance.get(
@@ -177,6 +180,7 @@ export const returnItem = async (id) => {
   }
 };
 
+//requested items
 export const getRequestedItems = async (data) => {
   try {
     const response = await axiosInstance.get("/rental-items");
