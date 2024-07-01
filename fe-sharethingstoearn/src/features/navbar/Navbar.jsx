@@ -30,7 +30,7 @@ import Logo from "../../assests/logo.png";
 import axiosInstance from "../../api/axiosInstance";
 import { MutatingDots } from "react-loader-spinner";
 
-let userNavigation = [
+const navData = [
   {
     name: "Your Profile",
     href: "/profile",
@@ -71,13 +71,32 @@ export default function NavBar() {
   const [loading, setLoading] = useState(false);
 
   const userData = JSON.parse(localStorage.getItem("user"));
+  const [userNavigation, setUserNavigation] = useState([...navData]);
 
-  if (userData?.role === "Admin") {
-    userNavigation[0].href = "/adminprofile";
-    delete userNavigation[1];
-    delete userNavigation[2];
-    delete userNavigation[3];
-  }
+  useEffect(() => {
+    if (userData) {
+      console.log("admin", userData);
+      if (userData?.role === "Admin") {
+        setUserNavigation([
+          {
+            name: "Your Profile",
+            href: "/adminprofile",
+            icon: <UserIcon className="h-5 w-5 mr-1" />,
+          },
+          {
+            name: "Sign out",
+            href: "#",
+            handleFunc: true,
+            icon: <ArrowRightOnRectangleIcon className="h-5 w-5 mr-1" />,
+          },
+        ]);
+      } else {
+        console.log("else->");
+        setUserNavigation([...navData]);
+      }
+    }
+  }, [profileDate]);
+
 
   const fetchUserData = async () => {
     try {
