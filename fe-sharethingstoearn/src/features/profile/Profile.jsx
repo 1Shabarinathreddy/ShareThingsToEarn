@@ -51,11 +51,9 @@ const Profile = () => {
     }
   };
 
-  // Function to handle form submission and validation
   const handleSubmit = (event) => {
     event.preventDefault();
     const errors = {};
-    // Example validation: Required fields
     if (!user?.name) {
       errors.name = "Name is required";
     }
@@ -208,8 +206,6 @@ const Profile = () => {
             </div>
           </div>
         </div>
-
-        {/* Edit Profile Button */}
         <div className="mt-8 flex justify-end">
           <button
             type="submit"
