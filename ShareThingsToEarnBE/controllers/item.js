@@ -3,7 +3,6 @@ const Op = require('sequelize').Op;
 const { BlobServiceClient } = require('@azure/storage-blob');
 const logger = require('../services/logger');
 
-// Azure Blob Storage setup
 const AZURE_STORAGE_CONNECTION_STRING = process.env.AZURE_STORAGE_CONNECTION_STRING;
 const blobServiceClient = BlobServiceClient.fromConnectionString(AZURE_STORAGE_CONNECTION_STRING);
 const containerClient = blobServiceClient.getContainerClient('sharethingsearbimagedb');
@@ -36,7 +35,6 @@ async function createItem(data, fileData, userId) {
         if (fileData) {
             const blockBlobClient = containerClient.getBlockBlobClient(fileData.originalname);
             const uploadBlobResponse = await blockBlobClient.uploadFile(fileData.path);
-            // Get the URL of the uploaded file
             const documentUrl = blockBlobClient.url;
             itemImage = await models.ItemImages.create({
                 itemId: Item.id,
@@ -106,7 +104,6 @@ async function updateItem(itemId, data, fileData, customerId) {
 
             const blockBlobClient = containerClient.getBlockBlobClient(fileData.originalname);
             const uploadBlobResponse = await blockBlobClient.uploadFile(fileData.path);
-            // Get the URL of the uploaded file
             const documentUrl = blockBlobClient.url;
             if(itemImageExists) {
                 await models.ItemImages.update({
