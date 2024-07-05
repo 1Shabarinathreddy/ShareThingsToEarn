@@ -321,7 +321,7 @@ export default function NavBar() {
                   alt=""
                 />
               </div>
-              <h6 style={{ fontWeight: 700 }}> ShareThinsToEarn</h6>
+              <h6 style={{ fontWeight: 700 }}> ShareThingsToEarn</h6>
             </div>
             <button
               type="button"
