@@ -1,4 +1,5 @@
 const models =  require('../models');
+const Op = require('sequelize').Op;
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const logger = require('../services/logger');
