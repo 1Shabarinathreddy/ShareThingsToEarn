@@ -197,7 +197,7 @@ async function listUsers() {
         [Op.ne]: 'Admin'
       }
     }});
-    const result = users.map(ele => {
+    const result = users.rows.map(ele => {
       return {
         ...omitPassword(ele.get())
       }
